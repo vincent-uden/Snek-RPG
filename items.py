@@ -1,3 +1,4 @@
+# Abstract class
 class Item:
     def __init__(self, name, value):
         self.name  = name
