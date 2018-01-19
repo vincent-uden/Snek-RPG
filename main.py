@@ -44,7 +44,6 @@ class Game:
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             elif tile_object.name == "npc1":
                 Npc(self, tile_object.x, tile_object.y, self.npc1_img)
-                print(tile_object.x, tile_object.y)
         if GRID_ON:
            self.grid = Grid(self, 0, 0, pg.image.load("grid.png"))
         # Creating viewport
