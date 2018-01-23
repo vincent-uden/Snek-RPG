@@ -32,26 +32,26 @@ class Gui_base:
         self.screen.blit(self.image, (self.x, self.y))
 
 class PauseMenu(Gui_base):
-    def __init__(self, screen, texture, x, y, actions):
+    def __init__(self, screen, texture, x, y, menus):
         super().__init__(screen, texture, x, y)
         self.pointer = pg.image.load("./gui_textures/selection.png")
         self.selected = 0
-        self.actions = actions
+        self.menus = menus
     
     def move_pointer(self, direction):
         self.selected += direction
         if self.selected < 0:
             self.selected = 0
-        if self.selected >= len(self.actions):
-            self.selected = len(self.actions) - 1
+        if self.selected >= len(self.menus):
+            self.selected = len(self.menus) - 1
     
     def draw(self):
         super().draw()
         self.screen.blit(self.pointer, (self.x + 30, self.y + 62 + self.selected * 40))
-        self.execute()
+        self.menus[self.selected].draw()
     
     def execute(self):
-        self.actions[self.selected]()
+        self.menus[self.selected].open()
 
 class StatsMenu(Gui_base):
     def __init__(self, screen, texture, x, y, player):
@@ -64,6 +64,10 @@ class StatsMenu(Gui_base):
     
     def draw(self):
         super().draw()
+        self.hp_text.update(f"{self.player.get_stat(3)}/{self.player.get_stat(2)}")
+        self.level_text.update(f"{self.player.get_stat(0)}")
+        self.xp_text.update(f"{self.player.get_stat(1)}")
+        self.name_text.update(f"{self.player.get_stat(4)}")
         self.hp_text.draw(445, 92)
         self.level_text.draw(380, 150)
         self.xp_text.draw(92, 150)
@@ -78,6 +82,7 @@ class InventoryMenu(Gui_base):
         super().__init__(screen, texture, x, y)
         self.player = player
         self.pointer = pg.image.load("./gui_textures/selection.png")
+        self.selected = 0
 
     def draw(self):
         super().draw()
@@ -85,6 +90,35 @@ class InventoryMenu(Gui_base):
             MenuText(f"{item.name}", self.screen).draw(83, 125 + index * 20)
             MenuText(f"{item.value}", self.screen).draw(500, 125 + index * 20)
     
+    def move_pointer(self, direction):
+        self.selected += direction
+        if self.selected < 0:
+            self.selected = 0
+        if self.selected >= len(self.player.inventory):
+            self.selected = len(self.player.inventory) - 1
+    
+    def execute(self):
+        if len(self.player.inventory) >= 0:
+            self.player.inventory[self.selected].use()
+
     def open(self):
-        self.draw()
-        pg.display.flip()
+        is_open = True
+        while is_open:
+            self.draw()
+            if len(self.player.inventory) >= 0:
+                self.screen.blit(self.pointer, (self.x + 50, self.y + 108 + self.selected * 20))
+            pg.display.flip()
+            # Event loop which overrides all other controls
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_p or event.key == pg.K_TAB:
+                        is_open = False
+                    elif event.key == pg.K_s:
+                        self.move_pointer(1)
+                    elif event.key == pg.K_w:
+                        self.move_pointer(-1)
+                    elif event.key == pg.K_e or event.key == pg.K_RETURN:
+                        self.player.use_item(self.selected)

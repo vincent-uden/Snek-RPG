@@ -50,11 +50,13 @@ class Game:
         self.camera = Camera(self.map.width, self.map.height)
         self.inven_menu = InventoryMenu(self.screen, pg.image.load(path.join(gui_folder, "inventory_menu.png")), 10, 10, self.player)
         self.stats_menu = StatsMenu(self.screen, pg.image.load(path.join(gui_folder, "stats_menu.png")), 10, 10, self.player)
-        self.pause_menu = PauseMenu(self.screen, pg.image.load(path.join(gui_folder, "pause_menu.png")), 580, 10, [self.inven_menu.open, self.stats_menu.open])
+        self.pause_menu = PauseMenu(self.screen, pg.image.load(path.join(gui_folder, "pause_menu.png")), 580, 10, [self.inven_menu, self.stats_menu])
+        # Giving player some items (temporary)
         self.items = create_items(self.player)
         for x in range(2):
             self.player.inventory.append(self.items[0])
         self.player.inventory.append(self.items[1])
+        self.player.inventory.append(self.items[2])
     
     def run(self):
         # Mainloop
@@ -109,6 +111,8 @@ class Game:
                         self.pause_menu.move_pointer(1)
                     elif event.key == pg.K_w:
                         self.pause_menu.move_pointer(-1)
+                    elif event.key == pg.K_e or event.key == pg.K_RETURN:
+                        self.pause_menu.execute()
             self.pause_menu.draw()
             pg.display.flip()
             self.clock.tick()

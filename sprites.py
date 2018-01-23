@@ -90,7 +90,12 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls("x")
         self.rect.y = self.pos.y
         self.collide_with_walls("y")
-            
+        
+    def use_item(self, index):
+        if index < len(self.inventory):
+            if self.inventory[index].useable:
+                self.inventory[index].use()
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
