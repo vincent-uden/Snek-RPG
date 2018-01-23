@@ -96,6 +96,8 @@ class InventoryMenu(Gui_base):
             self.selected = 0
         if self.selected >= len(self.player.inventory):
             self.selected = len(self.player.inventory) - 1
+        if len(self.player.inventory) == 0:
+            self.selected = 0
     
     def execute(self):
         if len(self.player.inventory) >= 0:
@@ -121,4 +123,7 @@ class InventoryMenu(Gui_base):
                     elif event.key == pg.K_w:
                         self.move_pointer(-1)
                     elif event.key == pg.K_e or event.key == pg.K_RETURN:
-                        self.player.use_item(self.selected)
+                        consumed = self.player.use_item(self.selected)
+                        if consumed:
+                            if self.selected > 0:
+                                self.selected -= 1

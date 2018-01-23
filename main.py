@@ -56,7 +56,7 @@ class Game:
         for x in range(2):
             self.player.inventory.append(self.items[0])
         self.player.inventory.append(self.items[1])
-        self.player.inventory.append(self.items[2])
+        #self.player.inventory.append(self.items[2])
     
     def run(self):
         # Mainloop
