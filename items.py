@@ -22,7 +22,7 @@ class Weapons(Item):
         self.acc_bonus = acc_bonus
     
     def __str__(self):
-        return f"{self.name}, {self.str_bonus}, {self.acc_bonus}"
+        return f"{self.name} Strength bonus {self.str_bonus} Accuracy bonus {self.acc_bonus}"
     
     def use(self):
         self.player.equip_weapon(self)
