@@ -17,8 +17,11 @@ class Player(pg.sprite.Sprite):
                        "xp"        :0,
                        "max_hp"    :10,
                        "current_hp":10,
-                       "name"      :"Curtis"}
+                       "name"      :"Curtis",
+                       "strength"  :1,
+                       "accuracy"  :1}
         self.inventory = []
+        self.equipped = [None]
     
     def get_stat(self, stat):
         mapping = [k for k in self.stats.keys()]
@@ -93,11 +96,20 @@ class Player(pg.sprite.Sprite):
         
     def use_item(self, index):
         if index < len(self.inventory):
-            if self.inventory[index].useable:
+            useing = getattr(self.inventory[index], "use", None)
+            if callable(useing):
                 self.inventory[index].use()
                 if self.inventory[index].consumeable:
                     self.inventory.pop(index)
                     return True
+    
+    def get_weapon(self):
+        return self.equipped[0]
+    
+    def equip_weapon(self, weapon):
+        if self.get_weapon() != None: 
+            self.inventory.append(self.get_weapon())
+        self.equipped[0] = weapon
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):

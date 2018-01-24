@@ -127,3 +127,14 @@ class InventoryMenu(Gui_base):
                         if consumed:
                             if self.selected > 0:
                                 self.selected -= 1
+
+class ShowEq:
+    def __init__(self, player):
+        self.player = player
+    
+    def open(self):
+        for item in self.player.equipped:
+            print(item)
+    
+    def draw(self):
+        return None
