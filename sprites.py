@@ -1,5 +1,6 @@
 import pygame as pg
 from settings import *
+from random import randint, uniform
 vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
@@ -13,19 +14,37 @@ class Player(pg.sprite.Sprite):
         self.vel    = vec(0, 0)
         self.pos    = vec(x, y)
         self.facing = vec(0, 1)
-        self.stats  = {"level"     :1,
-                       "xp"        :0,
-                       "max_hp"    :10,
-                       "current_hp":10,
-                       "name"      :"Curtis",
-                       "strength"  :1,
-                       "accuracy"  :1}
+        self.stats  = {"level"     :1,           # 0
+                       "xp"        :0,           # 1
+                       "max_hp"    :10,          # 2
+                       "current_hp":10,          # 3
+                       "name"      :"Curtis",    # 4
+                       "strength"  :1,           # 5
+                       "speed"     :50,          # 6
+                       "accuracy"  :1,           # 7
+                       "defence"   :1}           # 8
         self.inventory = []
         self.equipped = [None]
-    
+
+    def attack(self, target):
+        dmg = randint(0, self.get_stat(5) + self.get_weapon().str_bonus)
+        hit_chance = min(target.get_stat(7) / self.get_stat(8), 1) # Accuracy cannot be more than 100%
+        hit_roll = uniform(0.0, 1.0)
+        if hit_roll > 1 - hit_chance: # Inverse of hit_chance is chance of missing
+            target.change_stat(-dmg)
+
+
     def get_stat(self, stat):
         mapping = [k for k in self.stats.keys()]
         return self.stats[mapping[stat]]
+
+    def set_stat(self, stat, value):
+        mapping = [k for k in self.stats.keys()]
+        self.stats[mapping[stat]] = value
+
+    def change_stat(self, stat, value):
+        mapping = [k for k in self.stats.keys()]
+        self.stats[mapping[stat]] += value
 
     def get_keys(self):
         keys = pg.key.get_pressed()
@@ -53,7 +72,7 @@ class Player(pg.sprite.Sprite):
             self.facing.x = 0
             self.facing.y = 1
             self.image    = self.images[0]
-    
+
     def collide_with_walls(self, dir):
         if dir == "x":
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
@@ -85,15 +104,15 @@ class Player(pg.sprite.Sprite):
             if abs(self.vel.y * self.game.dt) > abs(self.pos.y - self.target[1]):
                 self.pos.y = self.target[1]
                 self.vel.y = 0
-        
+
         self.pos.x += self.vel.x * self.game.dt
         self.pos.y += self.vel.y * self.game.dt
-        
+
         self.rect.x = self.pos.x
         self.collide_with_walls("x")
-        self.rect.y = self.pos.y 
+        self.rect.y = self.pos.y
         self.collide_with_walls("y")
-        
+
     def use_item(self, index):
         if index < len(self.inventory):
             useing = getattr(self.inventory[index], "use", None)
@@ -102,12 +121,12 @@ class Player(pg.sprite.Sprite):
                 if self.inventory[index].consumeable:
                     self.inventory.pop(index)
                     return True
-    
+
     def get_weapon(self):
         return self.equipped[0]
-    
+
     def equip_weapon(self, weapon):
-        if self.get_weapon() != None: 
+        if self.get_weapon() != None:
             self.inventory.append(self.get_weapon())
         self.equipped[0] = weapon
 
@@ -146,7 +165,7 @@ class Tile(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
-    
+
 class MapTexture(pg.sprite.Sprite):
     def __init__(self, game, x, y, texture):
         self.groups = game.all_sprites
@@ -183,6 +202,38 @@ class Npc(pg.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         Obstacle(game, x, y, 40, 40)
-    
+
     def update(self):
         pass
+
+class Enemy(Npc):
+    def __init__(self, game, x ,y ,texture, name):
+        super().__init__(game, x , y, texture)
+        self.stats = {"level"     :1,
+                      "xp"        :0,
+                      "max_hp"    :10,
+                      "current_hp":10,
+                      "name"      :name,
+                      "strength"  :1,
+                      "speed"     :50,
+                      "accuracy"  :1,
+                      "defence"   :1}
+
+    def get_stat(self, stat):
+        mapping = [k for k in self.stats.keys()]
+        return self.stats[mapping[stat]]
+
+    def set_stat(self, stat, value):
+        mapping = [k for k in self.stats.keys()]
+        self.stats[mapping[stat]] = value
+
+    def change_stat(self, stat, value):
+        mapping = [k for k in self.stats.keys()]
+        self.stats[mapping[stat]] += value
+
+    def attack(self, target):
+        dmg = randint(0, self.get_stat(5) + self.get_weapon().str_bonus)
+        hit_chance = min(target.get_stat(7) / self.get_stat(8), 1) # Accuracy cannot be more than 100%
+        hit_roll = uniform(0.0, 1.0)
+        if hit_roll > 1 - hit_chance: # Inverse of hit_chance is chance of missing
+            target.change_stat(-dmg)

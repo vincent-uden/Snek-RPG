@@ -146,6 +146,6 @@
   <object id="11" name="npc1" x="1000" y="400" width="40" height="40"/>
   <object id="13" name="wall" x="280" y="0" width="80" height="120"/>
   <object id="14" name="wall" x="360" y="0" width="120" height="80"/>
-  <object id="15" name="wall" x="400" y="80" width="80" height="40"/>
+  <object id="15" name="wall " x="400" y="80" width="80" height="40"/>
  </objectgroup>
 </map>
