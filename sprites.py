@@ -209,6 +209,9 @@ class Npc(pg.sprite.Sprite):
     def update(self):
         pass
 
+    def get_texture(self, direction):
+        return self.image
+
 class Enemy(Npc):
     def __init__(self, game, x ,y ,texture, name):
         super().__init__(game, x , y, texture)

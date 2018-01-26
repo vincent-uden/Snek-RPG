@@ -139,17 +139,21 @@ class ShowEq:
     def draw(self):
         return None
 
-class BattleMenu(Gui_base):
-    # The menu for selecting actions during a battle
+class BattleScreen(Gui_base):
+    # The screen which show the players and opponents
     def __init__(self, screen, texture, x, y, player, enemies):
         super().__init__(screen, texture, x, y)
         self.player = player
-        self.pointer = pg.image.load("./gui_textures/selection.png")
-        self.selected = 0
         self.enemies = enemies
+        self.player_texture = self.player.get_texture(3)
+        self.enemy_textures = [enemy.get_texture(0) for enemy in enemies]
+        self.pointer = pg.image.load("./gui_textures/selection.png")
 
     def draw(self):
         super().draw()
+        self.screen.blit(self.player_texture, (135, 270))
+        for index, enemy_text in enumerate(self.enemy_textures):
+            self.screen.blit(enemy_text, (650 + index * 60, 150 + index * 20))
 
     def open(self):
         is_open = True

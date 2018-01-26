@@ -43,15 +43,17 @@ class Game:
             elif tile_object.name == "wall":
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             elif tile_object.name == "npc1":
-                Npc(self, tile_object.x, tile_object.y, self.npc1_img)
+                self.npc1 = Enemy(self, tile_object.x, tile_object.y, self.npc1_img, "Narvid")
         if GRID_ON:
            self.grid = Grid(self, 0, 0, pg.image.load("grid.png"))
+
         # Creating viewport
         self.camera = Camera(self.map.width, self.map.height)
         self.inven_menu = InventoryMenu(self.screen, pg.image.load(path.join(gui_folder, "inventory_menu.png")), 10, 10, self.player)
         self.stats_menu = StatsMenu(self.screen, pg.image.load(path.join(gui_folder, "stats_menu.png")), 10, 10, self.player)
         self.equipped_items = ShowEq(self.player)
         self.pause_menu = PauseMenu(self.screen, pg.image.load(path.join(gui_folder, "pause_menu.png")), 580, 10, [self.inven_menu, self.stats_menu, self.equipped_items])
+
         # Giving player some items (temporary)
         self.items = create_items(self.player)
         for x in range(2):
@@ -59,7 +61,7 @@ class Game:
         self.player.inventory.append(self.items[1])
         self.player.inventory.append(self.items[3])
         self.player.inventory.append(self.items[4])
-        self.battle_menu = BattleMenu(self.screen, pg.image.load("./gui_textures/battle_menu.png"), 0, 400, self.player, [])
+        self.battle_screen = BattleScreen(self.screen, pg.image.load("./gui_textures/battle_screen.png"), 0, 0, self.player, [self.npc1, self.npc1])
 
     def run(self):
         # Mainloop
@@ -99,7 +101,7 @@ class Game:
                 elif event.key == pg.K_p or event.key == pg.K_TAB:
                     self.pause()
                 elif event.key == pg.K_b:
-                    self.battle_menu.open()
+                    self.battle_screen.open()
 
     def pause(self):
         # Pausing

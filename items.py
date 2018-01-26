@@ -39,6 +39,3 @@ def create_items(player):
     items.append(Weapons("Wooden Sword", 10, player, 1, 1))
     items.append(Weapons("Iron sword", 15, player, 2, 2))
     return items
-
-
-# TODO: Fix items and inventory
