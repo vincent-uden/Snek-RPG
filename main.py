@@ -61,7 +61,7 @@ class Game:
         self.player.inventory.append(self.items[1])
         self.player.inventory.append(self.items[3])
         self.player.inventory.append(self.items[4])
-        self.battle_screen = BattleScreen(self.screen, pg.image.load("./gui_textures/battle_screen.png"), 0, 0, self.player, [self.npc1, self.npc1])
+        self.battle_screen = BattleScreen(self.screen, pg.image.load("./gui_textures/battle_screen.png"), 0, 0, self.player, [self.npc1], self.inven_menu)
 
     def run(self):
         # Mainloop

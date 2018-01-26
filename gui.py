@@ -139,21 +139,35 @@ class ShowEq:
     def draw(self):
         return None
 
+class HpBar(Gui_base):
+    def __init__(self, screen, texture, x, y, entity):
+        super().__init__(screen, texture, x, y)
+        self.entity = entity
+        self.bar = pg.Surface((168, 8))
+        self.bar.fill(GREEN)
+    
+    def draw(self):
+        # TODO: Create function and update function
+        pass
+
 class BattleScreen(Gui_base):
     # The screen which show the players and opponents
-    def __init__(self, screen, texture, x, y, player, enemies):
+    def __init__(self, screen, texture, x, y, player, enemies, invent):
         super().__init__(screen, texture, x, y)
         self.player = player
         self.enemies = enemies
         self.player_texture = self.player.get_texture(3)
         self.enemy_textures = [enemy.get_texture(0) for enemy in enemies]
         self.pointer = pg.image.load("./gui_textures/selection.png")
+        self.selected = 0
+        self.actions = [self.player.attack, invent.open]
 
     def draw(self):
         super().draw()
         self.screen.blit(self.player_texture, (135, 270))
         for index, enemy_text in enumerate(self.enemy_textures):
             self.screen.blit(enemy_text, (650 + index * 60, 150 + index * 20))
+        self.screen.blit(self.pointer, (640, 443 + self.selected * 40))
 
     def open(self):
         is_open = True
@@ -167,3 +181,11 @@ class BattleScreen(Gui_base):
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_TAB:
                         is_open = False
+                    elif event.key == pg.K_w:
+                        self.selected = max(0, self.selected - 1)
+                    elif event.key == pg.K_s:
+                        self.selected = min(2, self.selected + 1)
+                    elif event.key == pg.K_e:
+                        if self.selected == 0:
+                            if len(self.enemies):
+                                self.player.attack(self.enemies[0])
