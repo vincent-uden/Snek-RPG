@@ -26,6 +26,9 @@ class Player(pg.sprite.Sprite):
         self.inventory = []
         self.equipped = [None]
 
+    def get_texture(self, direction):
+        return self.images[direction]
+
     def attack(self, target):
         dmg = randint(0, self.get_stat(5) + self.get_weapon().str_bonus)
         hit_chance = min(target.get_stat(7) / self.get_stat(8), 1) # Accuracy cannot be more than 100%

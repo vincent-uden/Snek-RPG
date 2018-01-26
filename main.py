@@ -15,7 +15,7 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.load_data()
-    
+
     def load_data(self):
         # Getting important directories
         game_folder = path.dirname(__file__)
@@ -59,7 +59,8 @@ class Game:
         self.player.inventory.append(self.items[1])
         self.player.inventory.append(self.items[3])
         self.player.inventory.append(self.items[4])
-    
+        self.battle_menu = BattleMenu(self.screen, pg.image.load("./gui_textures/battle_menu.png"), 0, 400, self.player, [])
+
     def run(self):
         # Mainloop
         self.playing = True
@@ -68,7 +69,7 @@ class Game:
             self.events()
             self.update()
             self.draw()
-    
+
     def quit(self):
         pg.quit()
         sys.exit()
@@ -97,7 +98,9 @@ class Game:
                     self.quit()
                 elif event.key == pg.K_p or event.key == pg.K_TAB:
                     self.pause()
-    
+                elif event.key == pg.K_b:
+                    self.battle_menu.open()
+
     def pause(self):
         # Pausing
         paused = True
@@ -118,15 +121,15 @@ class Game:
             self.pause_menu.draw()
             pg.display.flip()
             self.clock.tick()
-    
+
     def show_start_screen(self):
         pass
-    
+
     def show_go_screen(self):
         pass
 
 class Screen_text(object):
-    
+
     def __init__(self, text, screen):
         self.font = pg.font.SysFont("Verdana", 11, True, False)
         self.screen_text = self.font.render(text, True, BLACK)
