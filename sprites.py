@@ -30,11 +30,14 @@ class Player(pg.sprite.Sprite):
         return self.images[direction]
 
     def attack(self, target):
-        dmg = randint(0, self.get_stat(5) + self.get_weapon().str_bonus)
+        if self.get_weapon() != None:
+            dmg = randint(0, self.get_stat(5) + self.get_weapon().str_bonus)
+        else:
+            dmg = randint(0, self.get_stat(5))
         hit_chance = min(target.get_stat(7) / self.get_stat(8), 1) # Accuracy cannot be more than 100%
         hit_roll = uniform(0.0, 1.0)
         if hit_roll > 1 - hit_chance: # Inverse of hit_chance is chance of missing
-            target.change_stat(-dmg)
+            target.change_stat(3, -dmg)
 
 
     def get_stat(self, stat):

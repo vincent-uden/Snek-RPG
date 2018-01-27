@@ -1,5 +1,6 @@
 import pygame as pg
 import sys
+import math
 from settings import *
 
 def f():
@@ -140,7 +141,8 @@ class ShowEq:
         return None
 
 class HpBar(Gui_base):
-    def __init__(self, screen, texture, x, y, entity):
+    def __init__(self, screen, x, y, entity):
+        texture = pg.image.load("./gui_textures/hp_bar.png")
         super().__init__(screen, texture, x, y)
         self.entity = entity
         self.bar = pg.Surface((168, 8))
@@ -148,7 +150,18 @@ class HpBar(Gui_base):
     
     def draw(self):
         # TODO: Create function and update function
-        pass
+        super().draw()
+        self.screen.blit(self.bar, (self.x + 16, self.y + 51))
+    
+    def update(self):
+        width = max(math.floor(168 * (self.entity.get_stat(3) / self.entity.get_stat(2))), 0)
+        self.bar = pg.Surface((width, 8))
+        if (self.entity.get_stat(3) / self.entity.get_stat(2)) > 0.3:
+            self.bar.fill(GREEN)
+        elif (self.entity.get_stat(3) / self.entity.get_stat(2)) > 0.15:
+            self.bar.fill(YELLOW)
+        else:
+            self.bar.fill(RED)
 
 class BattleScreen(Gui_base):
     # The screen which show the players and opponents
@@ -161,17 +174,25 @@ class BattleScreen(Gui_base):
         self.pointer = pg.image.load("./gui_textures/selection.png")
         self.selected = 0
         self.actions = [self.player.attack, invent.open]
+        self.player_bar = HpBar(self.screen, 60, 125, self.player)
+        self.enemy_bars = [HpBar(self.screen, 600, 170 + 67 * index, enemy) for index, enemy in enumerate(self.enemies)]
 
     def draw(self):
         super().draw()
         self.screen.blit(self.player_texture, (135, 270))
         for index, enemy_text in enumerate(self.enemy_textures):
-            self.screen.blit(enemy_text, (650 + index * 60, 150 + index * 20))
+            self.screen.blit(enemy_text, (640 + index * 50, 55 + index * 17))
         self.screen.blit(self.pointer, (640, 443 + self.selected * 40))
+        self.player_bar.draw()
+        for bar in self.enemy_bars:
+            bar.draw()
 
     def open(self):
         is_open = True
         while is_open:
+            for bar in self.enemy_bars:
+                bar.update()
+            self.player_bar.update()
             self.draw()
             pg.display.flip()
             for event in pg.event.get():
