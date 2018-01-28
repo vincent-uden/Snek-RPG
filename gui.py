@@ -88,8 +88,8 @@ class InventoryMenu(Gui_base):
     def draw(self):
         super().draw()
         for index, item in enumerate(self.player.inventory):
-            MenuText(f"{item.name}", self.screen).draw(83, 125 + index * 20)
-            MenuText(f"{item.value}", self.screen).draw(500, 125 + index * 20)
+            MenuText(f"{item.name}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
+            MenuText(f"{item.value}", self.screen).draw(self.x + 480, 125 + index * 20)
 
     def move_pointer(self, direction):
         self.selected += direction
@@ -106,10 +106,11 @@ class InventoryMenu(Gui_base):
 
     def open(self):
         is_open = True
+        pg.key.set_repeat(100, 50)
         while is_open:
             self.draw()
             if len(self.player.inventory) >= 0:
-                self.screen.blit(self.pointer, (self.x + 50, self.y + 108 + self.selected * 20))
+                self.screen.blit(self.pointer, (self.x + 35, self.y + 99 + self.selected * 20))
             pg.display.flip()
             # Event loop which overrides all other controls
             for event in pg.event.get():
@@ -128,6 +129,7 @@ class InventoryMenu(Gui_base):
                         if consumed:
                             if self.selected > 0:
                                 self.selected -= 1
+        pg.key.set_repeat()
 
 class ShowEq:
     def __init__(self, player):
@@ -176,6 +178,7 @@ class BattleScreen(Gui_base):
         self.actions = [self.player.attack, invent.open]
         self.player_bar = HpBar(self.screen, 60, 125, self.player)
         self.enemy_bars = [HpBar(self.screen, 600, 170 + 67 * index, enemy) for index, enemy in enumerate(self.enemies)]
+        self.battle_invent = BattleInventory(self.screen, pg.image.load("./gui_textures/battle_inventory.png"), 0, 0, self.player)
 
     def draw(self):
         super().draw()
@@ -210,3 +213,9 @@ class BattleScreen(Gui_base):
                         if self.selected == 0:
                             if len(self.enemies):
                                 self.player.attack(self.enemies[0])
+                        elif self.selected == 1:
+                            self.battle_invent.open()
+
+class BattleInventory(InventoryMenu):
+    def __init__(self, screen, texture, x, y, player):
+        super().__init__(screen, texture, x, y, player)
