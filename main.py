@@ -28,6 +28,8 @@ class Game:
         self.map_rect = self.map_img.get_rect()
         self.player_imgs = [pg.image.load(path.join(char_folder, filename)) for filename in PLAYER_IMGS]
         self.npc1_img = pg.image.load(path.join(char_folder, "npc1.png"))
+        self.npc2_img = pg.image.load(path.join(char_folder, "npc2.png"))
+        self.npc3_img = pg.image.load(path.join(char_folder, "npc3.png"))
 
     def new(self):
         game_folder = path.dirname(__file__)
@@ -44,6 +46,10 @@ class Game:
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             elif tile_object.name == "npc1":
                 self.npc1 = Enemy(self, tile_object.x, tile_object.y, self.npc1_img, "Narvid")
+            elif tile_object.name == "npc2":
+                self.npc2 = Enemy(self, tile_object.x, tile_object.y, self.npc2_img, "Darvid")
+            elif tile_object.name == "npc3":
+                self.npc3 = Enemy(self, tile_object.x, tile_object.y, self.npc3_img, "Barvid")
         if GRID_ON:
            self.grid = Grid(self, 0, 0, pg.image.load("grid.png"))
 
@@ -61,7 +67,7 @@ class Game:
         self.player.inventory.append(self.items[1])
         self.player.inventory.append(self.items[3])
         self.player.inventory.append(self.items[4])
-        self.battle_screen = BattleScreen(self.screen, pg.image.load("./gui_textures/battle_screen.png"), 0, 0, self.player, [self.npc1, self.npc1, self.npc1], self.inven_menu)
+        self.battle_screen = BattleScreen(self.screen, pg.image.load("./gui_textures/battle_screen.png"), 0, 0, self.player, [self.npc1, self.npc2, self.npc3], self.inven_menu)
 
     def run(self):
         # Mainloop

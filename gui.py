@@ -174,6 +174,7 @@ class BattleScreen(Gui_base):
         self.player_texture = self.player.get_texture(3)
         self.enemy_textures = [enemy.get_texture(0) for enemy in enemies]
         self.pointer = pg.image.load("./gui_textures/selection.png")
+        self.vert_pointer = pg.image.load("./gui_textures/vert_selection.png")
         self.selected = 0
         self.actions = [self.player.attack, invent.open]
         self.player_bar = HpBar(self.screen, 60, 125, self.player)
@@ -192,6 +193,7 @@ class BattleScreen(Gui_base):
 
     def open(self):
         is_open = True
+        selected_enemy = 0
         while is_open:
             for bar in self.enemy_bars:
                 bar.update()
@@ -211,8 +213,28 @@ class BattleScreen(Gui_base):
                         self.selected = min(2, self.selected + 1)
                     elif event.key == pg.K_e:
                         if self.selected == 0:
-                            if len(self.enemies):
+                            if len(self.enemies) == 1:
                                 self.player.attack(self.enemies[0])
+                            else:
+                                selecting = True
+                                while selecting:
+                                    self.draw()
+                                    self.screen.blit(self.vert_pointer, (651 + selected_enemy * 50, 30 + selected_enemy * 17))
+                                    pg.display.flip()
+                                    for event in pg.event.get():
+                                        if event.type == pg.QUIT:
+                                            pg.quit()
+                                            sys.exit()
+                                        elif event.type == pg.KEYDOWN:
+                                            if event.key == pg.K_TAB:
+                                                selecting = False
+                                            elif event.key == pg.K_a:
+                                                selected_enemy = max(0, selected_enemy - 1)
+                                            elif event.key == pg.K_d:
+                                                selected_enemy = min(len(self.enemies) - 1, selected_enemy + 1)
+                                            elif event.key == pg.K_e:
+                                                self.player.attack(self.enemies[selected_enemy])
+                                                selecting = False
                         elif self.selected == 1:
                             self.battle_invent.open()
 
