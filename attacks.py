@@ -12,7 +12,13 @@ class Attack:
         spd_tot = self.speed + offender.get_stat(6)
         acc_tot = self.accuracy + offender.get_stat(7)
         hit_chance = min((acc_tot / defender.get_stat(8)), 1) #TODO: Add temp stat bonus support + armor support
+        hit_roll = random.uniform(0.0, 1.0)
+        if hit_roll > hit_chance:
+            dmg = random.randint(0, str_tot)
+            defender.change_stat(3, -dmg)
 
+    def get_speed(self, offender):
+        return self.speed + offender.get_stat(6)
 
 class SpecialAttack(Attack):
     def __init__(self, name, speed, damage, accuracy, uses):

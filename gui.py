@@ -228,6 +228,26 @@ class BattleScreen(Gui_base):
                         selected_enemy = min(len(self.enemies) - 1, selected_enemy + 1)
                     elif event.key == pg.K_e:
                         return selected_enemy
+    
+    def select_attack(self):
+        selecting = True
+        selected_attack = 0
+        while selecting:
+            # Draw interface
+            pg.display.flip()
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_TAB:
+                        selecting = False
+                    elif event.key == pg.K_a:
+                        selected_enemy = max(0, selected_attack - 1)
+                    elif event.key == pg.K_d:
+                        selected_enemy = min(2, selected_attack + 1)
+                    elif event.key == pg.K_e:
+                        selected_attack
 
     def open(self):
         is_open = True

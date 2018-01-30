@@ -1,6 +1,7 @@
 import pygame as pg
 from settings import *
 from random import randint, uniform
+from attacks import *
 vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
@@ -24,6 +25,7 @@ class Player(pg.sprite.Sprite):
                        "accuracy"  :1,           # 7
                        "defence"   :1}           # 8
         self.inventory = []
+        self.attacks = [quick_attack1, power_attack1, special_attack1]
         self.equipped = [None]
 
     def get_texture(self, direction):
