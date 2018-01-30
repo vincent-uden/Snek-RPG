@@ -8,16 +8,17 @@ def f():
 
 class MenuText:
 
-    def __init__(self, text, screen):
-        self.font = pg.font.Font("./resources/PressStart2P.ttf", 16)
-        self.screen_text = self.font.render(text, True, BLACK)
+    def __init__(self, text, screen, size=16, AA=True):
+        self.font = pg.font.Font("./resources/PressStart2P.ttf", size)
+        self.screen_text = self.font.render(text, AA, BLACK)
         self.screen = screen
+        self.anti_aliasing = AA
 
     def draw(self, x, y):
         self.screen.blit(self.screen_text, (x, y))
 
     def update(self, new_text):
-        self.screen_text = self.font.render(new_text, True, BLACK)
+        self.screen_text = self.font.render(new_text, self.anti_aliasing, BLACK)
 
 class Gui_base:
     def __init__(self, screen, texture, x, y):
@@ -147,16 +148,20 @@ class HpBar(Gui_base):
         texture = pg.image.load("./gui_textures/hp_bar.png")
         super().__init__(screen, texture, x, y)
         self.entity = entity
-        self.bar = pg.Surface((168, 8))
+        self.name_text = MenuText(self.entity.get_stat(4).upper(), self.screen, size=16, AA=False)
+        self.hp_text = MenuText(f"HP:{self.entity.get_stat(3)}/{self.entity.get_stat(2)}", self.screen, size=16, AA=False)
+        self.bar = pg.Surface((275, 8))
         self.bar.fill(GREEN)
     
     def draw(self):
         # TODO: Create function and update function
         super().draw()
-        self.screen.blit(self.bar, (self.x + 16, self.y + 51))
+        self.screen.blit(self.bar, (self.x + 13, self.y + 53))
+        self.name_text.draw(self.x + 12, self.y + 26)
+        self.hp_text.draw(self.x + 160, self.y + 26)
     
     def update(self):
-        width = max(math.floor(168 * (self.entity.get_stat(3) / self.entity.get_stat(2))), 0)
+        width = max(math.floor(275 * (self.entity.get_stat(3) / self.entity.get_stat(2))), 0)
         self.bar = pg.Surface((width, 8))
         if (self.entity.get_stat(3) / self.entity.get_stat(2)) > 0.3:
             self.bar.fill(GREEN)
@@ -164,6 +169,7 @@ class HpBar(Gui_base):
             self.bar.fill(YELLOW)
         else:
             self.bar.fill(RED)
+        self.hp_text.update(f"HP:{self.entity.get_stat(3)}/{self.entity.get_stat(2)}")
 
 class BattleScreen(Gui_base):
     # The screen which show the players and opponents
@@ -178,18 +184,50 @@ class BattleScreen(Gui_base):
         self.selected = 0
         self.actions = [self.player.attack, invent.open]
         self.player_bar = HpBar(self.screen, 60, 125, self.player)
-        self.enemy_bars = [HpBar(self.screen, 600, 170 + 67 * index, enemy) for index, enemy in enumerate(self.enemies)]
+        self.enemy_bars = [HpBar(self.screen, 500, 170 + 67 * index, enemy) for index, enemy in enumerate(self.enemies)]
         self.battle_invent = BattleInventory(self.screen, pg.image.load("./gui_textures/battle_inventory.png"), 0, 0, self.player)
 
     def draw(self):
         super().draw()
         self.screen.blit(self.player_texture, (135, 270))
-        for index, enemy_text in enumerate(self.enemy_textures):
-            self.screen.blit(enemy_text, (640 + index * 50, 55 + index * 17))
+        if len(self.enemies) == 1:
+            self.screen.blit(self.enemy_textures[0], (690, 67))
+        elif len(self.enemies) == 2:
+            self.screen.blit(self.enemy_textures[0], (650, 65))
+            self.screen.blit(self.enemy_textures[1], (730, 87))
+        elif len(self.enemies) == 3:
+            self.screen.blit(self.enemy_textures[0], (650, 45))
+            self.screen.blit(self.enemy_textures[1], (690, 67))
+            self.screen.blit(self.enemy_textures[2], (730, 87))
+        #for index, enemy_text in enumerate(self.enemy_textures):
+        #    self.screen.blit(enemy_text, (640 + index * 50, 55 + index * 17))
         self.screen.blit(self.pointer, (640, 443 + self.selected * 40))
         self.player_bar.draw()
         for bar in self.enemy_bars:
             bar.draw()
+
+    def select_enemy(self, selected_enemy):
+        selecting = True
+        while selecting:
+            self.draw()
+            if len(self.enemies) == 3:
+                self.screen.blit(self.vert_pointer, (651 + selected_enemy * 50, 30 + selected_enemy * 17))
+            else:
+                self.screen.blit(self.vert_pointer, (661 + selected_enemy * 80, 35 + selected_enemy * 22))
+            pg.display.flip()
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_TAB:
+                        selecting = False
+                    elif event.key == pg.K_a:
+                        selected_enemy = max(0, selected_enemy - 1)
+                    elif event.key == pg.K_d:
+                        selected_enemy = min(len(self.enemies) - 1, selected_enemy + 1)
+                    elif event.key == pg.K_e:
+                        return selected_enemy
 
     def open(self):
         is_open = True
@@ -216,25 +254,8 @@ class BattleScreen(Gui_base):
                             if len(self.enemies) == 1:
                                 self.player.attack(self.enemies[0])
                             else:
-                                selecting = True
-                                while selecting:
-                                    self.draw()
-                                    self.screen.blit(self.vert_pointer, (651 + selected_enemy * 50, 30 + selected_enemy * 17))
-                                    pg.display.flip()
-                                    for event in pg.event.get():
-                                        if event.type == pg.QUIT:
-                                            pg.quit()
-                                            sys.exit()
-                                        elif event.type == pg.KEYDOWN:
-                                            if event.key == pg.K_TAB:
-                                                selecting = False
-                                            elif event.key == pg.K_a:
-                                                selected_enemy = max(0, selected_enemy - 1)
-                                            elif event.key == pg.K_d:
-                                                selected_enemy = min(len(self.enemies) - 1, selected_enemy + 1)
-                                            elif event.key == pg.K_e:
-                                                self.player.attack(self.enemies[selected_enemy])
-                                                selecting = False
+                                selected_enemy = self.select_enemy(selected_enemy)
+                                self.player.attack(self.enemies[selected_enemy])
                         elif self.selected == 1:
                             self.battle_invent.open()
 
