@@ -157,8 +157,8 @@ class HpBar(Gui_base):
         # TODO: Create function and update function
         super().draw()
         self.screen.blit(self.bar, (self.x + 13, self.y + 53))
-        self.name_text.draw(self.x + 12, self.y + 26)
-        self.hp_text.draw(self.x + 160, self.y + 26)
+        self.name_text.draw(self.x + 12, self.y + 20)
+        self.hp_text.draw(self.x + 160, self.y + 20)
     
     def update(self):
         width = max(math.floor(275 * (self.entity.get_stat(3) / self.entity.get_stat(2))), 0)
