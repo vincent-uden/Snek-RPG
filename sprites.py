@@ -23,24 +23,23 @@ class Player(pg.sprite.Sprite):
                        "strength"  :1,           # 5
                        "speed"     :50,          # 6
                        "accuracy"  :1,           # 7
-                       "defence"   :1}           # 8
+                       "defence"   :10}           # 8
         self.inventory = []
         self.attacks = [quick_attack1, power_attack1, special_attack1]
         self.equipped = [None]
 
     def get_texture(self, direction):
         return self.images[direction]
+    
+    def get_moveset(self):
+        return self.attacks
 
-    def attack(self, target):
-        if self.get_weapon() != None:
-            dmg = randint(0, self.get_stat(5) + self.get_weapon().str_bonus)
-        else:
-            dmg = randint(0, self.get_stat(5))
-        hit_chance = min(target.get_stat(7) / self.get_stat(8), 1) # Accuracy cannot be more than 100%
-        hit_roll = uniform(0.0, 1.0)
-        if hit_roll > 1 - hit_chance: # Inverse of hit_chance is chance of missing
-            target.change_stat(3, -dmg)
+    def get_move(self, index):
+        return self.attacks[index]
 
+    def attack(self, target, index):
+        att = self.get_move(index)
+        att.use(self, target)
 
     def get_stat(self, stat):
         mapping = [k for k in self.stats.keys()]
@@ -83,10 +82,9 @@ class Player(pg.sprite.Sprite):
         elif keys[pg.K_e]:
             next_tile = self.pos / 40 + self.facing
             try:
-                obj = self.game.map_data[int(next_tile.y)][int(next_tile.x)]
+                self.game.map_data[int(next_tile.y)][int(next_tile.x)].interact()
             except:
                 return
-            obj.interact()
 
     def collide_with_walls(self, dir):
         if dir == "x":
@@ -217,6 +215,7 @@ class Npc(pg.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         Obstacle(game, x, y, 40, 40)
+        self.attacks = [quick_attack1, power_attack1, special_attack1]
 
     def update(self):
         pass
@@ -235,7 +234,7 @@ class Enemy(Npc):
                       "strength"  :1,
                       "speed"     :50,
                       "accuracy"  :1,
-                      "defence"   :1}
+                      "defence"   :2}
 
     def get_stat(self, stat):
         mapping = [k for k in self.stats.keys()]
@@ -249,12 +248,16 @@ class Enemy(Npc):
         mapping = [k for k in self.stats.keys()]
         self.stats[mapping[stat]] += value
 
+    def get_moveset(self):
+        return self.attacks
+
+    def get_move(self, index):
+        return self.attacks[index]
+
     def attack(self, target):
-        dmg = randint(0, self.get_stat(5) + self.get_weapon().str_bonus)
-        hit_chance = min(target.get_stat(7) / self.get_stat(8), 1) # Accuracy cannot be more than 100%
-        hit_roll = uniform(0.0, 1.0)
-        if hit_roll > 1 - hit_chance: # Inverse of hit_chance is chance of missing
-            target.change_stat(-dmg)
+        index = 0
+        att = self.get_move(index)
+        att.use(self, target)
         
     def interact(self):
         self.game.battle_screen.open()

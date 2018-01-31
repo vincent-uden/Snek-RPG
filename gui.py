@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 import math
+import random
 from settings import *
 
 def f():
@@ -205,7 +206,6 @@ class BattleScreen(Gui_base):
             self.screen.blit(self.enemy_textures[2], (730, 87))
         #for index, enemy_text in enumerate(self.enemy_textures):
         #    self.screen.blit(enemy_text, (640 + index * 50, 55 + index * 17))
-        self.screen.blit(self.pointer, (640, 443 + self.selected * 40))
         self.player_bar.draw()
         for bar in self.enemy_bars:
             bar.draw()
@@ -236,8 +236,13 @@ class BattleScreen(Gui_base):
     def select_attack(self):
         selecting = True
         selected_attack = 0
+        attack_texts = [MenuText(attack.name, self.screen) for attack in self.player.get_moveset()]
         while selecting:
             # Draw interface
+            self.draw()
+            for index, attack in enumerate(attack_texts):
+                attack.draw(668, 447 + index * 40)
+            self.screen.blit(self.pointer, (640, 443 + selected_attack * 40))
             pg.display.flip()
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -246,12 +251,12 @@ class BattleScreen(Gui_base):
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_TAB:
                         selecting = False
-                    elif event.key == pg.K_a:
-                        selected_enemy = max(0, selected_attack - 1)
-                    elif event.key == pg.K_d:
-                        selected_enemy = min(2, selected_attack + 1)
+                    elif event.key == pg.K_w:
+                        selected_attack = max(0, selected_attack - 1)
+                    elif event.key == pg.K_s:
+                        selected_attack = min(2, selected_attack + 1)
                     elif event.key == pg.K_e:
-                        selected_attack
+                        return selected_attack
 
     def draw_base_options(self):
         for index, text in enumerate(self.base_choices):
@@ -265,6 +270,7 @@ class BattleScreen(Gui_base):
                 bar.update()
             self.player_bar.update()
             self.draw()
+            self.screen.blit(self.pointer, (640, 443 + self.selected * 40))
             self.draw_base_options()
             pg.display.flip()
             for event in pg.event.get():
@@ -280,11 +286,14 @@ class BattleScreen(Gui_base):
                         self.selected = min(2, self.selected + 1)
                     elif event.key == pg.K_e:
                         if self.selected == 0:
+                            selected_attack = self.select_attack()
                             if len(self.enemies) == 1:
-                                self.player.attack(self.enemies[0])
+                                self.player.attack(self.enemies[0], selected_attack)
                             else:
                                 selected_enemy = self.select_enemy(selected_enemy)
-                                self.player.attack(self.enemies[selected_enemy])
+                                self.player.attack(self.enemies[selected_enemy], selected_attack)
+                            for enemy in self.enemies:
+                                enemy.attack(self.player)
                         elif self.selected == 1:
                             self.battle_invent.open()
 
