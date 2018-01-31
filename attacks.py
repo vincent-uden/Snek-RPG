@@ -22,7 +22,7 @@ class Attack:
 
 class SpecialAttack(Attack):
     def __init__(self, name, speed, damage, accuracy, uses):
-        super().__init__(name, speed, damage)
+        super().__init__(name, speed, damage, accuracy)
         self.uses = uses
     
     def use(self):
