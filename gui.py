@@ -177,15 +177,19 @@ class BattleScreen(Gui_base):
         super().__init__(screen, texture, x, y)
         self.player = player
         self.enemies = enemies
+        # Textures
         self.player_texture = self.player.get_texture(3)
         self.enemy_textures = [enemy.get_texture(0) for enemy in enemies]
         self.pointer = pg.image.load("./gui_textures/selection.png")
         self.vert_pointer = pg.image.load("./gui_textures/vert_selection.png")
+
         self.selected = 0
         self.actions = [self.player.attack, invent.open]
         self.player_bar = HpBar(self.screen, 60, 125, self.player)
         self.enemy_bars = [HpBar(self.screen, 500, 170 + 67 * index, enemy) for index, enemy in enumerate(self.enemies)]
         self.battle_invent = BattleInventory(self.screen, pg.image.load("./gui_textures/battle_inventory.png"), 0, 0, self.player)
+        self.base_choices = [MenuText("Attack", self.screen), MenuText("Inventory", self.screen), MenuText("Run away", self.screen)]
+
 
     def draw(self):
         super().draw()
@@ -249,6 +253,10 @@ class BattleScreen(Gui_base):
                     elif event.key == pg.K_e:
                         selected_attack
 
+    def draw_base_options(self):
+        for index, text in enumerate(self.base_choices):
+            text.draw(668, 447 + index * 40)
+
     def open(self):
         is_open = True
         selected_enemy = 0
@@ -257,6 +265,7 @@ class BattleScreen(Gui_base):
                 bar.update()
             self.player_bar.update()
             self.draw()
+            self.draw_base_options()
             pg.display.flip()
             for event in pg.event.get():
                 if event.type == pg.QUIT:
