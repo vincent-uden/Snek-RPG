@@ -80,6 +80,13 @@ class Player(pg.sprite.Sprite):
             self.facing.x = 0
             self.facing.y = 1
             self.image    = self.images[0]
+        elif keys[pg.K_e]:
+            next_tile = self.pos / 40 + self.facing
+            try:
+                obj = self.game.map_data[int(next_tile.y)][int(next_tile.x)]
+            except:
+                return
+            obj.interact()
 
     def collide_with_walls(self, dir):
         if dir == "x":
@@ -248,3 +255,6 @@ class Enemy(Npc):
         hit_roll = uniform(0.0, 1.0)
         if hit_roll > 1 - hit_chance: # Inverse of hit_chance is chance of missing
             target.change_stat(-dmg)
+        
+    def interact(self):
+        self.game.battle_screen.open()

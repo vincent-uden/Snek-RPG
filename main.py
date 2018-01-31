@@ -39,7 +39,6 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.map_data = [[None for x in range(int(self.map_rect.width / 40))] for i in range(int(self.map_rect.height / 40))]
-        print(self.map_data)
         # Reading map data
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == "player":
@@ -48,11 +47,9 @@ class Game:
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             try:
                 if tile_object.name[:4:] == "npc_":
-                    print("hey", int(tile_object.y / 40), int(tile_object.x / 40))
                     self.map_data[int(tile_object.y / 40)][int(tile_object.x / 40)] = Enemy(self, tile_object.x, tile_object.y, self.npc1_img, tile_object.name[4::])
             except:
                 pass
-        print(self.map_data)
         if GRID_ON:
            self.grid = Grid(self, 0, 0, pg.image.load("grid.png"))
 
@@ -70,7 +67,7 @@ class Game:
         self.player.inventory.append(self.items[1])
         self.player.inventory.append(self.items[3])
         self.player.inventory.append(self.items[4])
-        self.battle_screen = BattleScreen(self.screen, pg.image.load("./gui_textures/battle_screen.png"), 0, 0, self.player, [self.map_data[10][25]], self.inven_menu)
+        self.battle_screen = BattleScreen(self.screen, pg.image.load("./gui_textures/battle_screen.png"), 0, 0, self.player, [self.map_data[10][25], self.map_data[11][25], self.map_data[12][25]], self.inven_menu)
 
     def run(self):
         # Mainloop
