@@ -47,3 +47,4 @@ special_attack1 = SpecialAttack("Dropkick", -20, 10, 0.5, 2)
 
 stab            = WeaponAttack("Stab", 20, 1, 1)
 slash           = WeaponAttack("Slash", 10, 2, 3)
+lunge           = WeaponAttack("Lunge", 100, 5, 1)

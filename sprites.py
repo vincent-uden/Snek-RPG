@@ -32,14 +32,21 @@ class Player(pg.sprite.Sprite):
         return self.images[direction]
     
     def get_moveset(self):
-        return self.attacks
+        if self.get_weapon() != None:
+            return self.get_weapon().get_moveset()
+        else:
+            return self.attacks
 
     def get_move(self, index):
         return self.attacks[index]
 
     def attack(self, target, index):
-        att = self.get_move(index)
-        att.use(self, target)
+        if self.equipped[0] == None:
+            att = self.get_move(index)
+            att.use(self, target)
+        else:
+           att = self.get_weapon().get_move(index)
+           att.use(self, target, self.get_weapon())
 
     def get_stat(self, stat):
         mapping = [k for k in self.stats.keys()]

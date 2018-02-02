@@ -210,6 +210,12 @@ class BattleScreen(Gui_base):
         for bar in self.enemy_bars:
             bar.draw()
 
+    def update_attacks(self):
+        if self.player.get_weapon != None:
+            self.base_choices = [MenuText(move.name, self.screen) for move in self.player.get_weapon().get_moveset()]
+        else:
+            self.base_choices = [MenuText("Attack", self.screen), MenuText("Inventory", self.screen), MenuText("Run away", self.screen)]
+
     def select_enemy(self, selected_enemy):
         selecting = True
         while selecting:
