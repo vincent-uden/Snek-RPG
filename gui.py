@@ -3,6 +3,9 @@ import sys
 import math
 import random
 from settings import *
+from animations import *
+
+vec = pg.math.Vector2
 
 def f():
     return None
@@ -190,11 +193,28 @@ class BattleScreen(Gui_base):
         self.enemy_bars = [HpBar(self.screen, 500, 170 + 67 * index, enemy) for index, enemy in enumerate(self.enemies)]
         self.battle_invent = BattleInventory(self.screen, pg.image.load("./gui_textures/battle_inventory.png"), 0, 0, self.player)
         self.base_choices = [MenuText("Attack", self.screen), MenuText("Inventory", self.screen), MenuText("Run away", self.screen)]
+        self.animating = False
 
+    def play_player_anim(self):
+        self.animating = True
+        pos = (135, 270)
+        offset = (0, 0)
+        while offset != (80, -40):
+            offset = (offset[0] + 8, offset[1] - 4)
+            self.draw()
+            self.screen.blit(self.player_texture, (pos[0] + offset[0], pos[1] + offset[1]))
+            pg.display.flip()
+        while offset != (0, 0):
+            offset = (offset[0] - 8, offset[1] + 4)
+            self.draw()
+            self.screen.blit(self.player_texture, (pos[0] + offset[0], pos[1] + offset[1]))
+            pg.display.flip()
+        self.animating = False
 
     def draw(self):
         super().draw()
-        self.screen.blit(self.player_texture, (135, 270))
+        if not self.animating:
+            self.screen.blit(self.player_texture, (135, 270))
         if len(self.enemies) == 1:
             self.screen.blit(self.enemy_textures[0], (690, 67))
         elif len(self.enemies) == 2:
@@ -298,6 +318,7 @@ class BattleScreen(Gui_base):
                             else:
                                 selected_enemy = self.select_enemy(selected_enemy)
                                 self.player.attack(self.enemies[selected_enemy], selected_attack)
+                            self.play_player_anim()
                             for enemy in self.enemies:
                                 enemy.attack(self.player)
                         elif self.selected == 1:
