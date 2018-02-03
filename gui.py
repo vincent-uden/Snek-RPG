@@ -3,7 +3,6 @@ import sys
 import math
 import random
 from settings import *
-from animations import *
 
 vec = pg.math.Vector2
 
@@ -194,36 +193,68 @@ class BattleScreen(Gui_base):
         self.battle_invent = BattleInventory(self.screen, pg.image.load("./gui_textures/battle_inventory.png"), 0, 0, self.player)
         self.base_choices = [MenuText("Attack", self.screen), MenuText("Inventory", self.screen), MenuText("Run away", self.screen)]
         self.animating = False
+        self.animated_enemy = None
 
     def play_player_anim(self):
         self.animating = True
         pos = (135, 270)
         offset = (0, 0)
-        while offset != (80, -40):
-            offset = (offset[0] + 8, offset[1] - 4)
+        while offset != (60, -30):
+            offset = (offset[0] + 10, offset[1] - 5)
+            print(offset)
             self.draw()
             self.screen.blit(self.player_texture, (pos[0] + offset[0], pos[1] + offset[1]))
             pg.display.flip()
         while offset != (0, 0):
-            offset = (offset[0] - 8, offset[1] + 4)
+            offset = (offset[0] - 10, offset[1] + 5)
             self.draw()
             self.screen.blit(self.player_texture, (pos[0] + offset[0], pos[1] + offset[1]))
             pg.display.flip()
         self.animating = False
+    
+    def play_enemy_anim(self, enemy_id):
+        self.animated_enemy = enemy_id
+        two_positions = [(650, 65), (730, 87)]
+        three_positions = [(650, 45), (690, 67), (730, 87)]
+        if len(self.enemies) == 1:
+            pos = (690, 67)
+        if len(self.enemies) == 2:
+            pos = two_positions[enemy_id]
+        if len(self.enemies) == 3:
+            pos = three_positions[enemy_id]
+        offset = (0, 0)
+        while offset != (-60, 30):
+            offset = (offset[0] - 10, offset[1] + 5)
+            self.draw()
+            self.screen.blit(self.enemy_textures[enemy_id], (pos[0] + offset[0], pos[1] + offset[1]))
+            pg.display.flip()
+        while offset != (0, 0):
+            offset = (offset[0] + 10, offset[1] - 5)
+            self.draw()
+            self.screen.blit(self.enemy_textures[enemy_id], (pos[0] + offset[0], pos[1] + offset[1]))
+            pg.display.flip()
+        self.animated_enemy = None
+        
 
     def draw(self):
         super().draw()
         if not self.animating:
             self.screen.blit(self.player_texture, (135, 270))
         if len(self.enemies) == 1:
-            self.screen.blit(self.enemy_textures[0], (690, 67))
+            if self.animated_enemy != 0:
+                self.screen.blit(self.enemy_textures[0], (690, 67))
         elif len(self.enemies) == 2:
-            self.screen.blit(self.enemy_textures[0], (650, 65))
-            self.screen.blit(self.enemy_textures[1], (730, 87))
+            if self.animated_enemy != 0:
+                self.screen.blit(self.enemy_textures[0], (650, 65))
+            if self.animated_enemy != 1:
+                self.screen.blit(self.enemy_textures[1], (730, 87))
         elif len(self.enemies) == 3:
-            self.screen.blit(self.enemy_textures[0], (650, 45))
-            self.screen.blit(self.enemy_textures[1], (690, 67))
-            self.screen.blit(self.enemy_textures[2], (730, 87))
+            if self.animated_enemy != 0:
+                self.screen.blit(self.enemy_textures[0], (650, 45))
+            if self.animated_enemy != 1:
+                self.screen.blit(self.enemy_textures[1], (690, 67))
+            if self.animated_enemy != 2:
+                self.screen.blit(self.enemy_textures[2], (730, 87))
         #for index, enemy_text in enumerate(self.enemy_textures):
         #    self.screen.blit(enemy_text, (640 + index * 50, 55 + index * 17))
         self.player_bar.draw()
@@ -319,8 +350,13 @@ class BattleScreen(Gui_base):
                                 selected_enemy = self.select_enemy(selected_enemy)
                                 self.player.attack(self.enemies[selected_enemy], selected_attack)
                             self.play_player_anim()
-                            for enemy in self.enemies:
+                            for i in range(50):
+                                self.draw()
+                            for index, enemy in enumerate(self.enemies):
                                 enemy.attack(self.player)
+                                self.play_enemy_anim(index)
+                                for i in range(50):
+                                    self.draw()
                         elif self.selected == 1:
                             self.battle_invent.open()
 
