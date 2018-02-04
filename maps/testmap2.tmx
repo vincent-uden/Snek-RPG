@@ -5,7 +5,7 @@
  </tileset>
  <tileset firstgid="101" source="houses.tsx"/>
  <tileset firstgid="297" name="tileset" tilewidth="40" tileheight="40" tilecount="100" columns="10">
-  <image source="../../../../Google Drive/testyboi/resources/tile_set_img.png" width="400" height="400"/>
+  <image source="../resources/tile_set_img.png" width="400" height="400"/>
  </tileset>
  <layer name="Tile Layer 2" width="50" height="30">
   <data encoding="csv">
