@@ -3,6 +3,7 @@ import sys
 from settings import *
 
 def start_battle_anim1(game, screen):
+    # First animation for starting battles
     vert_bar = pg.Surface((40, 600))
     dec_bars = pg.Surface((840, 600), flags=pg.SRCALPHA)
     asc_bars = pg.Surface((840, 600), flags=pg.SRCALPHA)

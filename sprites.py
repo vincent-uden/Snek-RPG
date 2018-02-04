@@ -87,13 +87,15 @@ class Player(pg.sprite.Sprite):
             self.facing.x = 0
             self.facing.y = 1
             self.image    = self.images[0]
-        elif keys[pg.K_e]:
+        if keys[pg.K_e]:
             next_tile = self.pos / 40 + self.facing
-            # try:
-            #     self.game.map_data[int(next_tile.y)][int(next_tile.x)].interact()
-            # except:
-            #    return
-            self.game.map_data[int(next_tile.y)][int(next_tile.x)].interact()
+            try:
+                self.game.map_data[int(next_tile.y)][int(next_tile.x)].interact()
+            except:
+               return
+        if keys[pg.K_LSHIFT]:
+            self.vel = self.vel * 2
+            
 
     def collide_with_walls(self, dir):
         if dir == "x":
