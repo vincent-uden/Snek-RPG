@@ -95,6 +95,14 @@ class Game:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         self.fps_counter.draw((5,5))
         pg.display.flip()
+    
+    def draw_alt(self):
+        # Draws everything during gameplay (not while in GUI menus)
+        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
+        self.fps_counter.draw((5,5))
+        
 
     def events(self):
         # Event loop for keys thats not player movement

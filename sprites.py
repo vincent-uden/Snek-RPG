@@ -2,6 +2,7 @@ import pygame as pg
 from settings import *
 from random import randint, uniform
 from attacks import *
+from animations import *
 vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
@@ -23,7 +24,7 @@ class Player(pg.sprite.Sprite):
                        "strength"  :1,           # 5
                        "speed"     :50,          # 6
                        "accuracy"  :1,           # 7
-                       "defence"   :10}           # 8
+                       "defence"   :1}           # 8
         self.inventory = []
         self.attacks = [quick_attack1, power_attack1, special_attack1]
         self.equipped = [None]
@@ -88,10 +89,11 @@ class Player(pg.sprite.Sprite):
             self.image    = self.images[0]
         elif keys[pg.K_e]:
             next_tile = self.pos / 40 + self.facing
-            try:
-                self.game.map_data[int(next_tile.y)][int(next_tile.x)].interact()
-            except:
-                return
+            # try:
+            #     self.game.map_data[int(next_tile.y)][int(next_tile.x)].interact()
+            # except:
+            #    return
+            self.game.map_data[int(next_tile.y)][int(next_tile.x)].interact()
 
     def collide_with_walls(self, dir):
         if dir == "x":
@@ -240,7 +242,7 @@ class Enemy(Npc):
                       "name"      :name,
                       "strength"  :1,
                       "speed"     :50,
-                      "accuracy"  :1,
+                      "accuracy"  :100,
                       "defence"   :2}
 
     def get_stat(self, stat):
@@ -267,4 +269,5 @@ class Enemy(Npc):
         att.use(self, target)
         
     def interact(self):
+        start_battle_anim1(self.game, self.game.screen)
         self.game.battle_screen.open()

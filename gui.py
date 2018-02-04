@@ -350,12 +350,22 @@ class BattleScreen(Gui_base):
                                 selected_enemy = self.select_enemy(selected_enemy)
                                 self.player.attack(self.enemies[selected_enemy], selected_attack)
                             self.play_player_anim()
-                            for i in range(50):
+                            for bar in self.enemy_bars:
+                                bar.update()
+                            self.player_bar.update()
+                            self.draw()
+                            pg.display.flip()
+                            for i in range(30):
                                 self.draw()
                             for index, enemy in enumerate(self.enemies):
                                 enemy.attack(self.player)
                                 self.play_enemy_anim(index)
-                                for i in range(50):
+                                for bar in self.enemy_bars:
+                                    bar.update()
+                                self.player_bar.update()
+                                self.draw()
+                                pg.display.flip()
+                                for i in range(30):
                                     self.draw()
                         elif self.selected == 1:
                             self.battle_invent.open()
