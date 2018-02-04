@@ -3,6 +3,7 @@ import sys
 import math
 import random
 from settings import *
+from items import *
 
 vec = pg.math.Vector2
 
@@ -344,11 +345,16 @@ class BattleScreen(Gui_base):
                     elif event.key == pg.K_e:
                         if self.selected == 0:
                             selected_attack = self.select_attack()
+                            if selected_attack == None:
+                                continue
                             if len(self.enemies) == 1:
                                 self.player.attack(self.enemies[0], selected_attack)
                             else:
                                 selected_enemy = self.select_enemy(selected_enemy)
-                                self.player.attack(self.enemies[selected_enemy], selected_attack)
+                                if selected_enemy != None:
+                                    self.player.attack(self.enemies[selected_enemy], selected_attack)
+                                else:
+                                    continue
                             self.play_player_anim()
                             for bar in self.enemy_bars:
                                 bar.update()
@@ -357,19 +363,61 @@ class BattleScreen(Gui_base):
                             pg.display.flip()
                             for i in range(30):
                                 self.draw()
-                            for index, enemy in enumerate(self.enemies):
-                                enemy.attack(self.player)
-                                self.play_enemy_anim(index)
-                                for bar in self.enemy_bars:
-                                    bar.update()
-                                self.player_bar.update()
-                                self.draw()
-                                pg.display.flip()
-                                for i in range(30):
-                                    self.draw()
+                            self.end_turn()
+                            continue
                         elif self.selected == 1:
-                            self.battle_invent.open()
+                            only_action = self.battle_invent.open()
+                            if only_action:
+                                self.end_turn()
+    
+    def end_turn(self):
+        for index, enemy in enumerate(self.enemies):
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+            enemy.attack(self.player)
+            self.play_enemy_anim(index)
+            for bar in self.enemy_bars:
+                bar.update()
+            self.player_bar.update()
+            self.draw()
+            pg.display.flip()
+            for i in range(30):
+                self.draw()
 
 class BattleInventory(InventoryMenu):
     def __init__(self, screen, texture, x, y, player):
         super().__init__(screen, texture, x, y, player)
+    
+    def open(self):
+        is_open = True
+        pg.key.set_repeat(100, 50)
+        while is_open:
+            self.draw()
+            if len(self.player.inventory) >= 0:
+                self.screen.blit(self.pointer, (self.x + 35, self.y + 99 + self.selected * 20))
+            pg.display.flip()
+            # Event loop which overrides all other controls
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_p or event.key == pg.K_TAB:
+                        is_open = False
+                    elif event.key == pg.K_s:
+                        self.move_pointer(1)
+                    elif event.key == pg.K_w:
+                        self.move_pointer(-1)
+                    elif event.key == pg.K_e or event.key == pg.K_RETURN:
+                        if isinstance(self.player.inventory[self.selected], Food):
+                            only_action = True
+                        else:
+                            only_action = False
+                        consumed = self.player.use_item(self.selected)
+                        if consumed:
+                            if self.selected > 0:
+                                self.selected -= 1
+                        if only_action:
+                            return True

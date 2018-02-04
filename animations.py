@@ -1,4 +1,5 @@
 import pygame as pg
+import sys
 from settings import *
 
 def start_battle_anim1(game, screen):
@@ -10,8 +11,12 @@ def start_battle_anim1(game, screen):
     for i in range(10):
         asc_bars.blit(vert_bar, (40 + i * 80, 0))
     y_offset = 0
-    speed = 1000
+    speed = 2000
     while y_offset < 600:
+        for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
         game.draw_alt()
         y_offset = y_offset + speed * game.dt
         screen.blit(dec_bars, (0, -600 + y_offset))
@@ -19,6 +24,10 @@ def start_battle_anim1(game, screen):
         pg.display.flip()
         game.clock.tick()
     while y_offset > 0:
+        for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
         y_offset = y_offset - speed * game.dt
         screen.fill(BLACK)
         pg.display.flip()
