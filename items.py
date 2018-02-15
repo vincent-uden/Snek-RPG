@@ -42,9 +42,10 @@ class Misc(Item):
 
 def create_items(player):
     items = []
+    items.append(Weapons("Iron sword", 15, player, 200, 100, [stab, slash, lunge]))
     items.append(Food("Bad Potato", 1, player, -1))
     items.append(Food("Potato", 1, player, 1))
     items.append(Misc("Pebble", 0))
     items.append(Weapons("Wooden Sword", 10, player, 1, 1, []))
-    items.append(Weapons("Iron sword", 15, player, 2, 2, [stab, slash, lunge]))
+
     return items

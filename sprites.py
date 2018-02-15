@@ -246,6 +246,7 @@ class Enemy(Npc):
                       "speed"     :50,
                       "accuracy"  :100,
                       "defence"   :2}
+        self.alive = True
 
     def get_stat(self, stat):
         mapping = [k for k in self.stats.keys()]

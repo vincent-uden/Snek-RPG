@@ -195,6 +195,7 @@ class BattleScreen(Gui_base):
         self.base_choices = [MenuText("Attack", self.screen), MenuText("Inventory", self.screen), MenuText("Run away", self.screen)]
         self.animating = False
         self.animated_enemy = None
+        self.alive_enemies = [enemy.alive for enemy in self.enemies]
 
     def play_player_anim(self):
         self.animating = True
@@ -245,16 +246,16 @@ class BattleScreen(Gui_base):
             if self.animated_enemy != 0:
                 self.screen.blit(self.enemy_textures[0], (690, 67))
         elif len(self.enemies) == 2:
-            if self.animated_enemy != 0:
+            if self.animated_enemy != 0 and self.alive_enemies[0]:
                 self.screen.blit(self.enemy_textures[0], (650, 65))
-            if self.animated_enemy != 1:
+            if self.animated_enemy != 1 and self.alive_enemies[1]:
                 self.screen.blit(self.enemy_textures[1], (730, 87))
         elif len(self.enemies) == 3:
-            if self.animated_enemy != 0:
+            if self.animated_enemy != 0 and self.alive_enemies[0]:
                 self.screen.blit(self.enemy_textures[0], (650, 45))
-            if self.animated_enemy != 1:
+            if self.animated_enemy != 1 and self.alive_enemies[1]:
                 self.screen.blit(self.enemy_textures[1], (690, 67))
-            if self.animated_enemy != 2:
+            if self.animated_enemy != 2 and self.alive_enemies[2]:
                 self.screen.blit(self.enemy_textures[2], (730, 87))
         #for index, enemy_text in enumerate(self.enemy_textures):
         #    self.screen.blit(enemy_text, (640 + index * 50, 55 + index * 17))
@@ -270,10 +271,13 @@ class BattleScreen(Gui_base):
 
     def select_enemy(self, selected_enemy):
         selecting = True
+        if not self.alive_enemies[selected_enemy]:
+            availible_enemies = [i for i,x in enumerate(self.alive_enemies) if x]
+            selected_enemy = availible_enemies[0]
         while selecting:
             self.draw()
             if len(self.enemies) == 3:
-                self.screen.blit(self.vert_pointer, (651 + selected_enemy * 50, 30 + selected_enemy * 17))
+                self.screen.blit(self.vert_pointer, (660 + selected_enemy * 41, 20 + selected_enemy * 20))
             else:
                 self.screen.blit(self.vert_pointer, (661 + selected_enemy * 80, 35 + selected_enemy * 22))
             pg.display.flip()
@@ -286,8 +290,19 @@ class BattleScreen(Gui_base):
                         selecting = False
                     elif event.key == pg.K_a:
                         selected_enemy = max(0, selected_enemy - 1)
+                        if not self.enemies[selected_enemy].alive:
+                            selected_enemy -= 1
+                            if not self.enemies[selected_enemy].alive or selected_enemy == -1:
+                                selected_enemy += 2
                     elif event.key == pg.K_d:
                         selected_enemy = min(len(self.enemies) - 1, selected_enemy + 1)
+                        if not self.enemies[selected_enemy].alive:
+                            selected_enemy += 1
+                            try:
+                                if not self.enemies[selected_enemy].alive:
+                                    selected_enemy -= 2
+                            except:
+                                selected_enemy -= 2
                     elif event.key == pg.K_e:
                         return selected_enemy
     
@@ -324,6 +339,7 @@ class BattleScreen(Gui_base):
         is_open = True
         selected_enemy = 0
         while is_open:
+            self.alive_enemies = [enemy.alive for enemy in self.enemies]
             for bar in self.enemy_bars:
                 bar.update()
             self.player_bar.update()
@@ -349,13 +365,18 @@ class BattleScreen(Gui_base):
                                 continue
                             if len(self.enemies) == 1:
                                 self.player.attack(self.enemies[0], selected_attack)
+                                if self.enemies[0].stats["current_hp"] <= 0:
+                                    self.enemies[0].alive = False
                             else:
                                 selected_enemy = self.select_enemy(selected_enemy)
                                 if selected_enemy != None:
                                     self.player.attack(self.enemies[selected_enemy], selected_attack)
+                                    if self.enemies[selected_enemy].stats["current_hp"] <= 0:
+                                        self.enemies[selected_enemy].alive = False
                                 else:
                                     continue
                             self.play_player_anim()
+                            self.alive_enemies = [enemy.alive for enemy in self.enemies]
                             for bar in self.enemy_bars:
                                 bar.update()
                             self.player_bar.update()
@@ -376,6 +397,8 @@ class BattleScreen(Gui_base):
                 if event.type == pg.QUIT:
                     pg.quit()
                     sys.exit()
+            if not enemy.alive:
+                continue
             enemy.attack(self.player)
             self.play_enemy_anim(index)
             for bar in self.enemy_bars:
