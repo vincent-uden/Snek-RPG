@@ -65,7 +65,7 @@ class Game:
         for x in range(2):
             self.player.inventory.append(self.items[0])
         self.player.inventory.append(self.items[1])
-        self.player.inventory.append(self.items[3])
+        self.player.inventory.append(self.items[2])
         self.player.inventory.append(self.items[4])
         self.battle_screen = BattleScreen(self.screen, pg.image.load("./gui_textures/battle_screen.png"), 0, 0, self.player, [self.map_data[10][25], self.map_data[11][25], self.map_data[12][25]], self.inven_menu)
 

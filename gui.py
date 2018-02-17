@@ -84,6 +84,7 @@ class StatsMenu(Gui_base):
             pg.display.flip()
 
 class InventoryMenu(Gui_base):
+
     def __init__(self, screen, texture, x, y, player):
         super().__init__(screen, texture, x, y)
         self.player = player
@@ -92,6 +93,7 @@ class InventoryMenu(Gui_base):
 
     def draw(self):
         super().draw()
+        self.screen.blit(self.player.inventory[self.selected].texture, (self.x + 456, self.y + 476))
         for index, item in enumerate(self.player.inventory):
             MenuText(f"{item.name}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
             MenuText(f"{item.value}", self.screen).draw(self.x + 480, 125 + index * 20)
