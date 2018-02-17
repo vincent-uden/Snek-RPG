@@ -272,5 +272,5 @@ class Enemy(Npc):
         att.use(self, target)
         
     def interact(self):
-        start_battle_anim1(self.game, self.game.screen)
+        start_battle_anim1(self.game, self.game.screen, self.game.battle_screen)
         self.game.battle_screen.open()

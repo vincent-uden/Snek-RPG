@@ -2,7 +2,7 @@ import pygame as pg
 import sys
 from settings import *
 
-def start_battle_anim1(game, screen):
+def start_battle_anim1(game, screen, battle):
     # First animation for starting battles
     vert_bar = pg.Surface((40, 600))
     dec_bars = pg.Surface((840, 600), flags=pg.SRCALPHA)
@@ -23,13 +23,15 @@ def start_battle_anim1(game, screen):
         screen.blit(dec_bars, (0, -600 + y_offset))
         screen.blit(asc_bars, (0, 600 - y_offset))
         pg.display.flip()
-        game.clock.tick()
-    while y_offset > 0:
+        game.clock.tick(FPS)
+    while y_offset < 1200:
         for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                     sys.exit()
-        y_offset = y_offset - speed * game.dt
-        screen.fill(BLACK)
+        battle.draw()
+        y_offset = y_offset + speed * game.dt
+        screen.blit(dec_bars, (0, -600 + y_offset))
+        screen.blit(asc_bars, (0, 600 - y_offset))
         pg.display.flip()
-        game.clock.tick()
+        game.clock.tick(FPS)
