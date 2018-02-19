@@ -14,12 +14,19 @@ class MenuText:
 
     def __init__(self, text, screen, size=16, AA=True):
         self.font = pg.font.Font("./resources/PressStart2P.ttf", size)
-        self.screen_text = self.font.render(text, AA, BLACK)
+        if type(text) != type([]):
+            self.screen_text = self.font.render(text, AA, BLACK)
+        else:
+            self.screen_text = [self.font.render(t, False, BLACK) for t in text]
         self.screen = screen
         self.anti_aliasing = AA
 
     def draw(self, x, y):
-        self.screen.blit(self.screen_text, (x, y))
+        if type(self.screen_text) == type([]):
+            for i, t in enumerate(self.screen_text):
+                self.screen.blit(t, (x, y + i * 18))
+        else:
+            self.screen.blit(self.screen_text, (x, y))
 
     def update(self, new_text):
         self.screen_text = self.font.render(new_text, self.anti_aliasing, BLACK)
@@ -90,10 +97,15 @@ class InventoryMenu(Gui_base):
         self.player = player
         self.pointer = pg.image.load("./gui_textures/selection.png")
         self.selected = 0
+        try:
+            self.current_f_text = MenuText(self.player.inventory[self.selected].get_flavor_text(), self.screen)
+        except IndexError:
+            self.current_f_text = MenuText("", self.screen)
 
     def draw(self):
         super().draw()
         self.screen.blit(self.player.inventory[self.selected].texture, (self.x + 456, self.y + 476))
+        self.current_f_text.draw(self.x + 30, self.y + 480)
         for index, item in enumerate(self.player.inventory):
             MenuText(f"{item.name}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
             MenuText(f"{item.value}", self.screen).draw(self.x + 480, 125 + index * 20)
@@ -106,6 +118,7 @@ class InventoryMenu(Gui_base):
             self.selected = len(self.player.inventory) - 1
         if len(self.player.inventory) == 0:
             self.selected = 0
+        self.current_f_text = MenuText(self.player.inventory[self.selected].get_flavor_text(), self.screen)
 
     def execute(self):
         if len(self.player.inventory) >= 0:
@@ -465,3 +478,11 @@ class BattleInventory(InventoryMenu):
                                 self.selected -= 1
                         if only_action:
                             return True
+
+    def draw(self):
+        Gui_base.draw(self)
+        self.screen.blit(self.player.inventory[self.selected].texture, (self.x + 456, self.y + 494))
+        self.current_f_text.draw(self.x + 30, self.y + 502)
+        for index, item in enumerate(self.player.inventory):
+            MenuText(f"{item.name}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
+            MenuText(f"{item.value}", self.screen).draw(self.x + 480, 125 + index * 20)

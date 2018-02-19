@@ -15,6 +15,8 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.load_data()
+        self.map_names = ["testmap2.tmx", "testmap3.tmx"]
+        self.current_map = 0
 
     def load_data(self):
         # Getting important directories
@@ -23,13 +25,21 @@ class Game:
         map_folder  = path.join(game_folder, "maps")
         gui_folder  = path.join(game_folder, "gui_textures")
         # Loading Textures
-        self.map = TileMap(path.join(map_folder, "testmap2.tmx"))
+        self.map = TileMap(path.join(map_folder, self.map_names[self.current_map]))
         self.map_img  = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.player_imgs = [pg.image.load(path.join(char_folder, filename)) for filename in PLAYER_IMGS]
         self.npc1_img = pg.image.load(path.join(char_folder, "npc1.png"))
         self.npc2_img = pg.image.load(path.join(char_folder, "npc2.png"))
         self.npc3_img = pg.image.load(path.join(char_folder, "npc3.png"))
+
+    def load_map(self, index):
+        game_folder = path.dirname(__file__)
+        map_folder = path.join(game_folder, "maps")
+        self.map = TileMap(path.join(map_folder, self.map_names[index]))
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
+        self.current_map = index
 
     def new(self):
         game_folder = path.dirname(__file__)
@@ -67,6 +77,7 @@ class Game:
         self.player.inventory.append(self.items[1])
         self.player.inventory.append(self.items[2])
         self.player.inventory.append(self.items[4])
+        self.player.inventory.append(self.items[5])
         self.battle_screen = BattleScreen(self.screen, pg.image.load("./gui_textures/battle_screen.png"), 0, 0, self.player, [self.map_data[10][25], self.map_data[11][25], self.map_data[12][25]], self.inven_menu)
 
     def run(self):
