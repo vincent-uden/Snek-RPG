@@ -45,3 +45,4 @@ def cell_transition(game, screen):
         fader.fill(curr_fade)
         screen.blit(fader, (0,0))
         pg.display.flip()
+        game.clock.tick(FPS)

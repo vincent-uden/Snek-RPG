@@ -195,7 +195,7 @@
   <object id="34" name="cell_load" x="0" y="440" width="40" height="120">
    <properties>
     <property name="cell_link" type="int" value="1"/>
-    <property name="cell_spawn" value="47,12"/>
+    <property name="cell_spawn" value="48,12"/>
    </properties>
   </object>
  </objectgroup>
