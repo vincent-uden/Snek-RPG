@@ -117,6 +117,11 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
                 self.rect.y = self.pos.y
 
+    def collide_with_cell_linkers(self):
+        hits = pg.sprite.spritecollide(self, self.game.cell_linkers, False)
+        if hits:
+            hits[0].switch_cell()
+
     def update(self):
         if self.vel.x == 0 and self.vel.y == 0:
             self.get_keys()
@@ -136,6 +141,7 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls("x")
         self.rect.y = self.pos.y
         self.collide_with_walls("y")
+        self.collide_with_cell_linkers()
 
     def use_item(self, index):
         if index < len(self.inventory):
@@ -177,6 +183,26 @@ class Obstacle(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x
         self.rect.y = y
+
+class CellLinker(Obstacle):
+    def __init__(self, game, x, y, w, h, linked_map, spawn_point):
+        self.groups = game.cell_linkers
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.rect = pg.Rect(x, y, w, h)
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+        self.linked_map = linked_map
+        self.spawn_point = spawn_point
+
+    def switch_cell(self):
+        print(self.linked_map, self.spawn_point)
+        cell_transition(self.game, self.game.screen)
+        self.game.load_map(self.linked_map)
+        self.game.player.pos = vec(self.spawn_point[0], self.spawn_point[1]) * 40
+        self.game.player.vel = vec(0,0)
 
 class Tile(pg.sprite.Sprite):
     def __init__(self, game, x, y, texture):

@@ -14,9 +14,9 @@ class Game:
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
-        self.load_data()
         self.map_names = ["testmap2.tmx", "testmap3.tmx"]
         self.current_map = 0
+        self.load_data()
 
     def load_data(self):
         # Getting important directories
@@ -24,14 +24,12 @@ class Game:
         char_folder = path.join(game_folder, "characters")
         map_folder  = path.join(game_folder, "maps")
         gui_folder  = path.join(game_folder, "gui_textures")
-        # Loading Textures
-        self.map = TileMap(path.join(map_folder, self.map_names[self.current_map]))
-        self.map_img  = self.map.make_map()
-        self.map_rect = self.map_img.get_rect()
         self.player_imgs = [pg.image.load(path.join(char_folder, filename)) for filename in PLAYER_IMGS]
         self.npc1_img = pg.image.load(path.join(char_folder, "npc1.png"))
         self.npc2_img = pg.image.load(path.join(char_folder, "npc2.png"))
         self.npc3_img = pg.image.load(path.join(char_folder, "npc3.png"))
+        # Loading Textures
+        self.load_map(self.current_map)
 
     def load_map(self, index):
         game_folder = path.dirname(__file__)
@@ -40,14 +38,9 @@ class Game:
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.current_map = index
-
-    def new(self):
-        game_folder = path.dirname(__file__)
-        gui_folder  = path.join(game_folder, "gui_textures")
-        # Initializing sprite groups + sprites and texts
-        self.fps_counter = Screen_text(str(self.clock.get_fps()), self.screen)
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.cell_linkers = pg.sprite.Group()
         self.map_data = [[None for x in range(int(self.map_rect.width / 40))] for i in range(int(self.map_rect.height / 40))]
         # Reading map data
         for tile_object in self.map.tmxdata.objects:
@@ -55,11 +48,21 @@ class Game:
                 self.player = Player(self, tile_object.x, tile_object.y)
             elif tile_object.name == "wall":
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            elif tile_object.name == "cell_load":
+                CellLinker(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height, int(tile_object.properties["cell_link"]), [int(coord) for coord in tile_object.properties["cell_spawn"].split(",")])
             try:
                 if tile_object.name[:4:] == "npc_":
                     self.map_data[int(tile_object.y / 40)][int(tile_object.x / 40)] = Enemy(self, tile_object.x, tile_object.y, self.npc1_img, tile_object.name[4::])
             except:
                 pass
+        if self.player not in self.all_sprites:
+            self.all_sprites.add(self.player)
+
+    def new(self):
+        game_folder = path.dirname(__file__)
+        gui_folder  = path.join(game_folder, "gui_textures")
+        # Initializing sprite groups + sprites and texts
+        self.fps_counter = Screen_text(str(self.clock.get_fps()), self.screen)
         if GRID_ON:
            self.grid = Grid(self, 0, 0, pg.image.load("grid.png"))
 
@@ -98,6 +101,7 @@ class Game:
         self.all_sprites.update()
         self.camera.update(self.player)
         self.fps_counter.update(str(self.clock.get_fps()))
+        print(self.player.groups)
 
     def draw(self):
         # Draws everything during gameplay (not while in GUI menus)

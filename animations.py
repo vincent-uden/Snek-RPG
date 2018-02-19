@@ -35,3 +35,13 @@ def start_battle_anim1(game, screen, battle):
         screen.blit(asc_bars, (0, 600 - y_offset))
         pg.display.flip()
         game.clock.tick(FPS)
+
+def cell_transition(game, screen):
+    fader = pg.Surface((WIDTH, HEIGHT), flags=pg.SRCALPHA)
+    curr_fade = (0,0,0,0)
+    for i in range(255):
+        game.draw_alt()
+        curr_fade = (curr_fade[0], curr_fade[1], curr_fade[2], i)
+        fader.fill(curr_fade)
+        screen.blit(fader, (0,0))
+        pg.display.flip()
