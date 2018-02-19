@@ -1,26 +1,34 @@
 # Snek-RPG
 A tile based JRPG created from scratch by me using pygame.
 
-## main.py
+## Requirements
+Python 3.6 or higher(might work with lower versions but not guaranteed), pygame, pytmx and pillow(all three can be installed through pip).
+
+## Files
+### main.py
 
 This file is run to start the game. Contains the Game class which creates all essential objects for running the game.
 
-## sprites.py
+### sprites.py
 
 This file contains the classes for all ingame objects such as characters and obstacles which the player needs to test for hit collision.
 
-## gui.py
+### gui.py
 
 This file contains the classes for all ingame graphical interfaces such as the pause menu.
 
-## settings.py
+### settings.py
 
 This file contains several different settings for the game, both settings which could be changed while playing the game and settings which shouldn't ever really change.
 
-## tilemap.py
+### tilemap.py
 
 This file contains the classes needed for loading and using the game map(except for the obstacles located in sprites.py).
 
-## items.py
+### items.py
 
 This file contains the classes required for items which will include food, weapons, potions, etc.
+
+### animations.py
+
+This file contains animations such as cell transitions and battle initiations.
