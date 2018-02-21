@@ -72,7 +72,7 @@ class Game:
         self.inven_menu = InventoryMenu(self.screen, pg.image.load(path.join(gui_folder, "inventory_menu.png")), 10, 10, self.player)
         self.stats_menu = StatsMenu(self.screen, pg.image.load(path.join(gui_folder, "stats_menu.png")), 10, 10, self.player)
         self.equipped_items = ShowEq(self.player)
-        self.pause_menu = PauseMenu(self.screen, pg.image.load(path.join(gui_folder, "pause_menu.png")), 580, 10, [self.inven_menu, self.stats_menu, self.equipped_items])
+        self.pause_menu = PauseMenu(self.screen, pg.image.load(path.join(gui_folder, "pause_menu.png")), 580, 10, [self.inven_menu, self.stats_menu, self.equipped_items], self)
 
         # Giving player some items (temporary)
         self.items = create_items(self.player)

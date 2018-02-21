@@ -45,11 +45,12 @@ class Gui_base:
         self.screen.blit(self.image, (self.x, self.y))
 
 class PauseMenu(Gui_base):
-    def __init__(self, screen, texture, x, y, menus):
+    def __init__(self, screen, texture, x, y, menus, game):
         super().__init__(screen, texture, x, y)
         self.pointer = pg.image.load("./gui_textures/selection.png")
         self.selected = 0
         self.menus = menus
+        self.game = game
 
     def move_pointer(self, direction):
         self.selected += direction
@@ -59,9 +60,10 @@ class PauseMenu(Gui_base):
             self.selected = len(self.menus) - 1
 
     def draw(self):
+        self.game.draw_alt()
         super().draw()
         self.screen.blit(self.pointer, (self.x + 30, self.y + 62 + self.selected * 40))
-        self.menus[self.selected].draw()
+        #self.menus[self.selected].draw()
 
     def execute(self):
         self.menus[self.selected].open()
@@ -87,8 +89,17 @@ class StatsMenu(Gui_base):
         self.name_text.draw(120, 92)
 
     def open(self):
+        is_open = True
+        while is_open:
             self.draw()
             pg.display.flip()
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_p or event.key == pg.K_TAB:
+                        is_open = False
 
 class InventoryMenu(Gui_base):
 
