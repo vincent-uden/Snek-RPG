@@ -39,10 +39,18 @@ def start_battle_anim1(game, screen, battle):
 def cell_transition(game, screen):
     fader = pg.Surface((WIDTH, HEIGHT), flags=pg.SRCALPHA)
     curr_fade = (0,0,0,0)
-    for i in range(255):
+    duration = 1000
+    progress = 0
+    dt = game.clock.tick(FPS)
+    while progress < 255:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
         game.draw_alt()
-        curr_fade = (curr_fade[0], curr_fade[1], curr_fade[2], i)
+        curr_fade = (curr_fade[0], curr_fade[1], curr_fade[2], progress)
         fader.fill(curr_fade)
         screen.blit(fader, (0,0))
         pg.display.flip()
-        game.clock.tick(FPS)
+        dt = game.clock.tick(FPS)
+        progress += (dt / duration) * 255

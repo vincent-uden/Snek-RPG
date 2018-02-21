@@ -33,7 +33,13 @@ class Camera:
     def apply_rect(self, rect):
         return rect.move(self.camera.topleft)
 
-    def update(self, target):
+    def update(self, target, is_interior):
+        if is_interior:
+            self.int_update(target)
+        else:
+            self.ext_update(target)
+    
+    def ext_update(self, target):
         x = -target.pos.x + int(WIDTH / 2)
         y = -target.pos.y + int(HEIGHT / 2)
         # limit scrolling
@@ -41,6 +47,12 @@ class Camera:
         y = min(0, y)
         x = max(-(self.width - WIDTH), x)
         y = max(-(self.height - HEIGHT), y)
+        self.camera = pg.Rect(x, y, self.width, self.height)
+    
+    def int_update(self, target):
+        x = -target.pos.x + int(WIDTH / 2)
+        y = -target.pos.y + int(HEIGHT / 2)
+        # limit scrolling
         self.camera = pg.Rect(x, y, self.width, self.height)
 
 class TileMap:

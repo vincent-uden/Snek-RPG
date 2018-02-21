@@ -219,6 +219,10 @@ class BattleScreen(Gui_base):
         for bar in self.enemy_bars:
             self.base_surface.blit(bar.image, (bar.x, bar.y))
             self.base_surface.blit(bar.name_text.screen_text, (bar.x + 12, bar.y + 20))
+        # Instructions
+        self.instructions = [MenuText("Choose an action", self.screen, size=24, AA=False),
+                             MenuText("Choose an attack", self.screen, size=24, AA=False),
+                             MenuText("Choose an enemy", self.screen, size=24, AA=False)]
 
     def play_player_anim(self):
         self.animating = True
@@ -226,7 +230,6 @@ class BattleScreen(Gui_base):
         offset = (0, 0)
         while offset != (60, -30):
             offset = (offset[0] + 10, offset[1] - 5)
-            print(offset)
             self.draw()
             self.screen.blit(self.player_texture, (pos[0] + offset[0], pos[1] + offset[1]))
             pg.display.flip()
@@ -309,6 +312,7 @@ class BattleScreen(Gui_base):
             selected_enemy = availible_enemies[0]
         while selecting:
             self.draw()
+            self.instructions[2].draw(100, 484)
             if len(self.enemies) == 3:
                 self.screen.blit(self.vert_pointer, (660 + selected_enemy * 41, 20 + selected_enemy * 20))
             else:
@@ -346,6 +350,7 @@ class BattleScreen(Gui_base):
         while selecting:
             # Draw interface
             self.draw()
+            self.instructions[1].draw(100, 484)
             for index, attack in enumerate(attack_texts):
                 attack.draw(668, 447 + index * 40)
             self.screen.blit(self.pointer, (640, 443 + selected_attack * 40))
@@ -365,6 +370,7 @@ class BattleScreen(Gui_base):
                         return selected_attack
 
     def draw_base_options(self):
+        self.instructions[0].draw(100, 484)
         for index, text in enumerate(self.base_choices):
             text.draw(668, 447 + index * 40)
 

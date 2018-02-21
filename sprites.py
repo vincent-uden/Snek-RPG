@@ -184,7 +184,7 @@ class Obstacle(pg.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-class CellLinker(Obstacle):
+class CellLinker(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h, linked_map, spawn_point):
         self.groups = game.cell_linkers
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -201,7 +201,7 @@ class CellLinker(Obstacle):
         self.game.player.vel = vec(0, 0)
         cell_transition(self.game, self.game.screen)
         self.game.load_map(self.linked_map)
-        self.game.player.pos = vec(self.spawn_point[0], self.spawn_point[1]) * 40
+        self.game.player.pos = vec(self.spawn_point[0], self.spawn_point[1]) * TILESIZE
         self.game.player.vel = vec(0,0)
         self.game.player.rect.x = self.game.player.pos.x
         self.game.player.rect.y = self.game.player.pos.y

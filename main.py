@@ -14,7 +14,7 @@ class Game:
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
-        self.map_names = ["testmap2.tmx", "testmap3.tmx"]
+        self.map_names = ["testmap2.tmx", "testmap3.tmx", "interior1.tmx"]
         self.current_map = 0
         self.load_data()
 
@@ -29,7 +29,7 @@ class Game:
         self.npc2_img = pg.image.load(path.join(char_folder, "npc2.png"))
         self.npc3_img = pg.image.load(path.join(char_folder, "npc3.png"))
         # Loading Textures
-        self.load_map(self.current_map)
+        self.load_map(0)
 
     def load_map(self, index):
         game_folder = path.dirname(__file__)
@@ -38,6 +38,7 @@ class Game:
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.current_map = index
+        self.is_interior = "interior" in self.map_names[self.current_map]
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.cell_linkers = pg.sprite.Group()
@@ -99,9 +100,8 @@ class Game:
     def update(self):
         # Updating everything
         self.all_sprites.update()
-        self.camera.update(self.player)
+        self.camera.update(self.player, self.is_interior)
         self.fps_counter.update(str(self.clock.get_fps()))
-        print(self.player.groups)
 
     def draw(self):
         # Draws everything during gameplay (not while in GUI menus)
