@@ -117,8 +117,14 @@ class InventoryMenu(Gui_base):
         super().draw()
         self.screen.blit(self.player.inventory[self.selected].texture, (self.x + 456, self.y + 476))
         self.current_f_text.draw(self.x + 30, self.y + 480)
-        for index, item in enumerate(self.player.inventory):
-            MenuText(f"{item.name}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
+        self.stacks = {}
+        for item in self.player.inventory:
+            if item.name in self.stacks:
+                self.stacks[item.name].append(item)
+            else:
+                self.stacks[item.name] = [item]
+        for index, name in enumerate(self.stacks.keys()):
+            MenuText(f"{name} × ", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
             MenuText(f"{item.value}", self.screen).draw(self.x + 480, 125 + index * 20)
 
     def move_pointer(self, direction):

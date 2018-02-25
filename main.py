@@ -76,8 +76,7 @@ class Game:
 
         # Giving player some items (temporary)
         self.items = create_items(self.player)
-        for x in range(2):
-            self.player.inventory.append(self.items[0])
+        self.player.inventory.append(self.items[0])
         self.player.inventory.append(self.items[1])
         self.player.inventory.append(self.items[2])
         self.player.inventory.append(self.items[4])

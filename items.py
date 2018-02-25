@@ -49,8 +49,8 @@ class Misc(Item):
     def __init__(self, name, value, texture, flavor_text):
         super().__init__(name, value, False, texture, flavor_text)
 
+items = []
 def create_items(player):
-    items = []
     items.append(Weapons("Iron sword", 15, player, 200, 100, [stab, slash, lunge], pg.image.load("./items/iron_sword.png"), "Just an average sword."))
     items.append(Food("Bad Potato", 1, player, -1, pg.image.load("./items/bad_potato.png"), ["A bad potato, probably ", "not good for your body."]))
     items.append(Food("Potato", 1, player, 1, pg.image.load("./items/potato.png"), "A potato, heals 1 hp."))
@@ -59,3 +59,6 @@ def create_items(player):
     items.append(Food("Health Potion", 100, player, 10, pg.image.load("./items/health_pot.png"), "Heals 10 hp."))
 
     return items
+
+# Preset Loot Tables
+low_lvl_chest_loot = [items[0].copy(), items[2].copy, items[2].copy]
