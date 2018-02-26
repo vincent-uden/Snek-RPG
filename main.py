@@ -1,5 +1,6 @@
 import pygame as pg
 import sys
+import copy
 from os import path
 # Other files from project
 from settings import *
@@ -74,8 +75,18 @@ class Game:
         self.equipped_items = ShowEq(self.player)
         self.pause_menu = PauseMenu(self.screen, pg.image.load(path.join(gui_folder, "pause_menu.png")), 580, 10, [self.inven_menu, self.stats_menu, self.equipped_items], self)
 
+        self.items = []
+        # Create items
+        self.items.append(Weapons("Iron sword", 15, self.player, 200, 100, [stab, slash, lunge], pg.image.load("./items/iron_sword.png"), "Just an average sword."))
+        self.items.append(Food("Bad Potato", 1, self.player, -1, pg.image.load("./items/bad_potato.png"), ["A bad potato, probably ", "not good for your body."]))
+        self.items.append(Food("Potato", 1, self.player, 1, pg.image.load("./items/potato.png"), "A potato, heals 1 hp."))
+        self.items.append(Misc("Pebble", 0, pg.Surface((80, 80)), ""))
+        self.items.append(Weapons("Wooden Sword", 10, self.player, 1, 1, [], pg.image.load("./items/wood_sword.png"), "A bad sword."))
+        self.items.append(Food("Health Potion", 100, self.player, 10, pg.image.load("./items/health_pot.png"), "Heals 10 hp."))
+
+        low_lvl_chest_loot = [copy.copy(self.items[0]), copy.copy(self.items[2]), copy.copy(self.items[2])]
+
         # Giving player some items (temporary)
-        self.items = create_items(self.player)
         self.player.inventory.append(self.items[0])
         self.player.inventory.append(self.items[1])
         self.player.inventory.append(self.items[2])
