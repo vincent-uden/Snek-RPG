@@ -143,14 +143,13 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls("y")
         self.collide_with_cell_linkers()
 
-    def use_item(self, index):
-        if index < len(self.inventory):
-            useing = getattr(self.inventory[index], "use", None)
-            if callable(useing):
-                self.inventory[index].use()
-                if self.inventory[index].consumeable:
-                    self.inventory.pop(index)
-                    return True
+    def use_item(self, item):
+        useing = getattr(item, "use", None)
+        if callable(useing):
+            item.use()
+            if item.consumeable:
+                self.inventory.remove(item)
+                return True
 
     def get_weapon(self):
         return self.equipped[0]

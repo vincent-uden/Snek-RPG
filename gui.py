@@ -171,7 +171,7 @@ class InventoryMenu(Gui_base):
                         self.move_pointer(-1)
                     elif event.key == pg.K_e or event.key == pg.K_RETURN:
                         self.move_pointer(0)
-                        consumed = self.player.use_item(self.selected)
+                        consumed = self.player.use_item(self.stacks[list(self.stacks.keys())[self.selected]][0])
                         #if consumed:
                         #    if self.selected > 0:
                         #        self.selected -= 1
@@ -582,5 +582,3 @@ class ContainerMenu(Gui_base):
                         item = self.stacks[list(self.stacks.keys())[self.selected]][0]
                         self.current_item_list.remove(item)
                         player.inventory.append(item)
-                        print(item)
-                        print(player.inventory)
