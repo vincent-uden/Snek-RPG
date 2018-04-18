@@ -138,9 +138,9 @@ class InventoryMenu(Gui_base):
             self.selected = 0
         if self.selected >= len(self.stacks):
             self.selected = len(self.stacks) - 1
-        if len(self.player.inventory) == 0:
+        if len(self.stacks) == 0:
             self.selected = 0
-        if self.player.inventory != []:
+        if self.stacks != {}:
             self.current_f_text = MenuText(self.stacks[list(self.stacks.keys())[self.selected]][0].get_flavor_text(), self.screen)
         else:
             self.current_f_text = MenuText("", self.screen)
@@ -500,24 +500,32 @@ class BattleInventory(InventoryMenu):
                     elif event.key == pg.K_w:
                         self.move_pointer(-1)
                     elif event.key == pg.K_e or event.key == pg.K_RETURN:
-                        if isinstance(self.player.inventory[self.selected], Food):
+                        if isinstance(self.stacks[list(self.stacks.keys())[self.selected]][0], Food):
                             only_action = True
                         else:
                             only_action = False
-                        consumed = self.player.use_item(self.selected)
-                        if consumed:
-                            if self.selected > 0:
-                                self.selected -= 1
+                        consumed = self.player.use_item(self.stacks[list(self.stacks.keys())[self.selected]][0])
                         if only_action:
                             return True
 
     def draw(self):
         Gui_base.draw(self)
-        self.screen.blit(self.player.inventory[self.selected].texture, (self.x + 456, self.y + 494))
         self.current_f_text.draw(self.x + 30, self.y + 502)
-        for index, item in enumerate(self.player.inventory):
-            MenuText(f"{item.name}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
-            MenuText(f"{item.value}", self.screen).draw(self.x + 480, 105 + index * 20)
+        self.stacks = {}
+        for item in self.player.inventory:
+            if item.name in self.stacks:
+                self.stacks[item.name].append(item)
+            else:
+                self.stacks[item.name] = [item]
+        if self.selected > len(self.stacks) - 1:
+            self.move_pointer(-1)
+        if len(self.player.inventory) > 0:
+            for index, name in enumerate(self.stacks.keys()):
+                MenuText(f"{name} × {len(self.stacks[name])}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
+                MenuText(f"{self.stacks[name][0].value}", self.screen).draw(self.x + 480, 105 + index * 20)
+                if index == self.selected:
+                    self.screen.blit(self.stacks[name][0].texture, (self.x + 456, self.y + 476))
+
 
 class ContainerMenu(Gui_base):
     def __init__(self, screen, container):
