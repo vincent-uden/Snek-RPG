@@ -55,7 +55,8 @@ class Game:
             elif tile_object.name == "cell_load":
                 CellLinker(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height, int(tile_object.properties["cell_link"]), [int(coord) for coord in tile_object.properties["cell_spawn"].split(",")])
             elif tile_object.name == "chest":
-                self.map_data[int(tile_object.y / 40)][int(tile_object.x / 40)] = Container(3, self.drop_tables[0].get_items(), self.screen, self.player)
+                self.map_data[int(tile_object.y / 40)][int(tile_object.x / 40)] = Container(3, self.drop_tables[tile_object.properties["loot_table"]].get_items(), self.screen, self.player)
+                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             try:
                 if tile_object.name[:4:] == "npc_":
                     self.map_data[int(tile_object.y / 40)][int(tile_object.x / 40)] = Enemy(self, tile_object.x, tile_object.y, self.npc1_img, tile_object.name[4::])

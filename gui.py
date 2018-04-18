@@ -541,7 +541,6 @@ class ContainerMenu(Gui_base):
 
     def draw(self):
         super().draw()
-        self.current_f_text.draw(self.x + 30, self.y + 480)
         self.stacks = {}
         for item in self.current_item_list:
             if item.name in self.stacks:
@@ -550,11 +549,14 @@ class ContainerMenu(Gui_base):
                 self.stacks[item.name] = [item]
         if self.selected > len(self.stacks) - 1:
             self.move_pointer(-1)
-        for index, name in enumerate(self.stacks.keys()):
-            MenuText(f"{name} × {len(self.stacks[name])}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
-            MenuText(f"{self.stacks[name][0].value}", self.screen).draw(self.x + 480, 105 + index * 20)
-            if index == self.selected:
-                self.screen.blit(self.stacks[name][0].texture, (self.x + 456, self.y + 476))
+        if self.stacks != {}:
+            for index, name in enumerate(self.stacks.keys()):
+                MenuText(f"{name} × {len(self.stacks[name])}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
+                MenuText(f"{self.stacks[name][0].value}", self.screen).draw(self.x + 480, 105 + index * 20)
+                if index == self.selected:
+                    self.screen.blit(self.stacks[name][0].texture, (self.x + 456, self.y + 476))
+                    self.current_f_text.draw(self.x + 30, self.y + 480)
+
 
     def move_pointer(self, direction):
         self.selected += direction
@@ -564,7 +566,10 @@ class ContainerMenu(Gui_base):
             self.selected = len(self.stacks) - 1
         if len(self.current_item_list) == 0:
             self.selected = 0
-        self.current_f_text = MenuText(self.stacks[list(self.stacks.keys())[self.selected]][0].get_flavor_text(), self.screen)
+        try:
+            self.current_f_text = MenuText(self.container.items[self.selected].get_flavor_text(), self.screen)
+        except IndexError:
+            self.current_f_text = MenuText("", self.screen)
 
     def open(self, player):
         is_open = True
@@ -582,7 +587,6 @@ class ContainerMenu(Gui_base):
                         is_open = False
                         print("closed")
                     elif event.key == pg.K_w:
-                        print("w")
                         self.move_pointer(-1)
                     elif event.key == pg.K_s:
                         self.move_pointer(1)

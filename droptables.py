@@ -16,7 +16,7 @@ class StaticDropTable(DropTable):
         return self.items[::]
 
 def create_drop_tables(items):
-    tables = []
-    test_table1 = tables.append(StaticDropTable([items[0], items[5], items[5]]))
+    tables = {}
+    tables["static_test_table_1"] = StaticDropTable([items[0], items[5], items[5]])
     return tables
 
