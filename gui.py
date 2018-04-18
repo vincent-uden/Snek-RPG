@@ -124,11 +124,12 @@ class InventoryMenu(Gui_base):
                 self.stacks[item.name] = [item]
         if self.selected > len(self.stacks) - 1:
             self.move_pointer(-1)
-        for index, name in enumerate(self.stacks.keys()):
-            MenuText(f"{name} × {len(self.stacks[name])}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
-            MenuText(f"{self.stacks[name][0].value}", self.screen).draw(self.x + 480, 105 + index * 20)
-            if index == self.selected:
-                self.screen.blit(self.stacks[name][0].texture, (self.x + 456, self.y + 476))
+        if len(self.player.inventory) > 0:
+            for index, name in enumerate(self.stacks.keys()):
+                MenuText(f"{name} × {len(self.stacks[name])}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
+                MenuText(f"{self.stacks[name][0].value}", self.screen).draw(self.x + 480, 105 + index * 20)
+                if index == self.selected:
+                    self.screen.blit(self.stacks[name][0].texture, (self.x + 456, self.y + 476))
 
 
     def move_pointer(self, direction):
@@ -139,7 +140,10 @@ class InventoryMenu(Gui_base):
             self.selected = len(self.stacks) - 1
         if len(self.player.inventory) == 0:
             self.selected = 0
-        self.current_f_text = MenuText(self.stacks[list(self.stacks.keys())[self.selected]][0].get_flavor_text(), self.screen)
+        if self.player.inventory != []:
+            self.current_f_text = MenuText(self.stacks[list(self.stacks.keys())[self.selected]][0].get_flavor_text(), self.screen)
+        else:
+            self.current_f_text = MenuText("", self.screen)
 
     def execute(self):
         if len(self.player.inventory) >= 0:
@@ -514,3 +518,69 @@ class BattleInventory(InventoryMenu):
         for index, item in enumerate(self.player.inventory):
             MenuText(f"{item.name}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
             MenuText(f"{item.value}", self.screen).draw(self.x + 480, 105 + index * 20)
+
+class ContainerMenu(Gui_base):
+    def __init__(self, screen, container):
+        super().__init__(screen, pg.image.load("./gui_textures/container_menu.png"), WIDTH / 2 - 280, HEIGHT / 2 - 290)
+        self.container = container
+        self.pointer = pg.image.load("./gui_textures/selection.png")
+        self.selected = 0
+        try:
+            self.current_f_text = MenuText(self.container.items[self.selected].get_flavor_text(), self.screen)
+        except IndexError:
+            self.current_f_text = MenuText("", self.screen)
+        self.current_item_list = self.container.items
+
+    def draw(self):
+        super().draw()
+        self.current_f_text.draw(self.x + 30, self.y + 480)
+        self.stacks = {}
+        for item in self.current_item_list:
+            if item.name in self.stacks:
+                self.stacks[item.name].append(item)
+            else:
+                self.stacks[item.name] = [item]
+        if self.selected > len(self.stacks) - 1:
+            self.move_pointer(-1)
+        for index, name in enumerate(self.stacks.keys()):
+            MenuText(f"{name} × {len(self.stacks[name])}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
+            MenuText(f"{self.stacks[name][0].value}", self.screen).draw(self.x + 480, 105 + index * 20)
+            if index == self.selected:
+                self.screen.blit(self.stacks[name][0].texture, (self.x + 456, self.y + 476))
+
+    def move_pointer(self, direction):
+        self.selected += direction
+        if self.selected < 0:
+            self.selected = 0
+        if self.selected >= len(self.stacks):
+            self.selected = len(self.stacks) - 1
+        if len(self.current_item_list) == 0:
+            self.selected = 0
+        self.current_f_text = MenuText(self.stacks[list(self.stacks.keys())[self.selected]][0].get_flavor_text(), self.screen)
+
+    def open(self, player):
+        is_open = True
+        while is_open:
+            self.draw()
+            if len(self.current_item_list) >= 0:
+                self.screen.blit(self.pointer, (self.x + 35, self.y + 99 + self.selected * 20))
+            pg.display.flip()
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_TAB:
+                        is_open = False
+                        print("closed")
+                    elif event.key == pg.K_w:
+                        print("w")
+                        self.move_pointer(-1)
+                    elif event.key == pg.K_s:
+                        self.move_pointer(1)
+                    elif event.key == pg.K_e:
+                        item = self.stacks[list(self.stacks.keys())[self.selected]][0]
+                        self.current_item_list.remove(item)
+                        player.inventory.append(item)
+                        print(item)
+                        print(player.inventory)

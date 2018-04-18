@@ -55,7 +55,7 @@ class Game:
             elif tile_object.name == "cell_load":
                 CellLinker(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height, int(tile_object.properties["cell_link"]), [int(coord) for coord in tile_object.properties["cell_spawn"].split(",")])
             elif tile_object.name == "chest":
-                self.map_data[int(tile_object.y / 40)][int(tile_object.x / 40)] = Container(3, self.drop_tables[0].get_items(), None, self.player)
+                self.map_data[int(tile_object.y / 40)][int(tile_object.x / 40)] = Container(3, self.drop_tables[0].get_items(), self.screen, self.player)
             try:
                 if tile_object.name[:4:] == "npc_":
                     self.map_data[int(tile_object.y / 40)][int(tile_object.x / 40)] = Enemy(self, tile_object.x, tile_object.y, self.npc1_img, tile_object.name[4::])
@@ -83,11 +83,11 @@ class Game:
         self.drop_tables = create_drop_tables(self.items)
 
         # Giving player some items (temporary)
-        self.player.inventory.append(self.items[0])
-        self.player.inventory.append(self.items[1])
-        self.player.inventory.append(self.items[2])
-        self.player.inventory.append(self.items[4])
-        self.player.inventory.append(self.items[5])
+        #self.player.inventory.append(self.items[0])
+        #self.player.inventory.append(self.items[1])
+        #self.player.inventory.append(self.items[2])
+        #self.player.inventory.append(self.items[4])
+        #self.player.inventory.append(self.items[5])
         self.battle_screen = BattleScreen(self.screen, pg.image.load("./gui_textures/battle_screen.png"), 0, 0, self.player, [self.map_data[10][25], self.map_data[11][25], self.map_data[12][25]], self.inven_menu)
 
     def run(self):
