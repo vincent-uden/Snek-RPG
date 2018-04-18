@@ -8,6 +8,8 @@ from sprites import *
 from tilemap import *
 from gui import *
 from items import *
+from containers import Container
+from droptables import *
 
 class Game:
     def __init__(self):
@@ -52,6 +54,8 @@ class Game:
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             elif tile_object.name == "cell_load":
                 CellLinker(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height, int(tile_object.properties["cell_link"]), [int(coord) for coord in tile_object.properties["cell_spawn"].split(",")])
+            elif tile_object.name == "chest":
+                self.map_data[int(tile_object.y / 40)][int(tile_object.x / 40)] = Container(3, self.drop_tables[0].get_items(), None, self.player)
             try:
                 if tile_object.name[:4:] == "npc_":
                     self.map_data[int(tile_object.y / 40)][int(tile_object.x / 40)] = Enemy(self, tile_object.x, tile_object.y, self.npc1_img, tile_object.name[4::])
@@ -75,16 +79,8 @@ class Game:
         self.equipped_items = ShowEq(self.player)
         self.pause_menu = PauseMenu(self.screen, pg.image.load(path.join(gui_folder, "pause_menu.png")), 580, 10, [self.inven_menu, self.stats_menu, self.equipped_items], self)
 
-        self.items = []
-        # Create items
-        self.items.append(Weapons("Iron sword", 15, self.player, 200, 100, [stab, slash, lunge], pg.image.load("./items/iron_sword.png"), "Just an average sword."))
-        self.items.append(Food("Bad Potato", 1, self.player, -1, pg.image.load("./items/bad_potato.png"), ["A bad potato, probably ", "not good for your body."]))
-        self.items.append(Food("Potato", 1, self.player, 1, pg.image.load("./items/potato.png"), "A potato, heals 1 hp."))
-        self.items.append(Misc("Pebble", 0, pg.Surface((80, 80)), ""))
-        self.items.append(Weapons("Wooden Sword", 10, self.player, 1, 1, [], pg.image.load("./items/wood_sword.png"), "A bad sword."))
-        self.items.append(Food("Health Potion", 100, self.player, 10, pg.image.load("./items/health_pot.png"), "Heals 10 hp."))
-
-        low_lvl_chest_loot = [copy.copy(self.items[0]), copy.copy(self.items[2]), copy.copy(self.items[2])]
+        self.items = create_items(self.player)
+        self.drop_tables = create_drop_tables(self.items)
 
         # Giving player some items (temporary)
         self.player.inventory.append(self.items[0])

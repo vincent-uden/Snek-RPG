@@ -115,7 +115,6 @@ class InventoryMenu(Gui_base):
 
     def draw(self):
         super().draw()
-        self.screen.blit(self.player.inventory[self.selected].texture, (self.x + 456, self.y + 476))
         self.current_f_text.draw(self.x + 30, self.y + 480)
         self.stacks = {}
         for item in self.player.inventory:
@@ -123,19 +122,24 @@ class InventoryMenu(Gui_base):
                 self.stacks[item.name].append(item)
             else:
                 self.stacks[item.name] = [item]
+        if self.selected > len(self.stacks) - 1:
+            self.move_pointer(-1)
         for index, name in enumerate(self.stacks.keys()):
-            MenuText(f"{name} × ", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
-            MenuText(f"{item.value}", self.screen).draw(self.x + 480, 125 + index * 20)
+            MenuText(f"{name} × {len(self.stacks[name])}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
+            MenuText(f"{self.stacks[name][0].value}", self.screen).draw(self.x + 480, 105 + index * 20)
+            if index == self.selected:
+                self.screen.blit(self.stacks[name][0].texture, (self.x + 456, self.y + 476))
+
 
     def move_pointer(self, direction):
         self.selected += direction
         if self.selected < 0:
             self.selected = 0
-        if self.selected >= len(self.player.inventory):
-            self.selected = len(self.player.inventory) - 1
+        if self.selected >= len(self.stacks):
+            self.selected = len(self.stacks) - 1
         if len(self.player.inventory) == 0:
             self.selected = 0
-        self.current_f_text = MenuText(self.player.inventory[self.selected].get_flavor_text(), self.screen)
+        self.current_f_text = MenuText(self.stacks[list(self.stacks.keys())[self.selected]][0].get_flavor_text(), self.screen)
 
     def execute(self):
         if len(self.player.inventory) >= 0:
@@ -162,10 +166,11 @@ class InventoryMenu(Gui_base):
                     elif event.key == pg.K_w:
                         self.move_pointer(-1)
                     elif event.key == pg.K_e or event.key == pg.K_RETURN:
+                        self.move_pointer(0)
                         consumed = self.player.use_item(self.selected)
-                        if consumed:
-                            if self.selected > 0:
-                                self.selected -= 1
+                        #if consumed:
+                        #    if self.selected > 0:
+                        #        self.selected -= 1
         pg.key.set_repeat()
 
 class ShowEq:
@@ -320,7 +325,7 @@ class BattleScreen(Gui_base):
         if self.player.get_weapon != None:
             self.base_choices = [MenuText(move.name, self.screen) for move in self.player.get_weapon().get_moveset()]
         else:
-            self.base_choices = [MenuText("Attack", self.screen), MenuText("Inventory", self.screen), MenuText("Run away", self.screen)]
+            self.base_choices = [MenuText("Attack", self.screen), MenuText("", self.screen), MenuText("Run away", self.screen)]
 
     def select_enemy(self, selected_enemy):
         selecting = True
@@ -508,4 +513,4 @@ class BattleInventory(InventoryMenu):
         self.current_f_text.draw(self.x + 30, self.y + 502)
         for index, item in enumerate(self.player.inventory):
             MenuText(f"{item.name}", self.screen).draw(self.x + 63, self.y + 105 + index * 20)
-            MenuText(f"{item.value}", self.screen).draw(self.x + 480, 125 + index * 20)
+            MenuText(f"{item.value}", self.screen).draw(self.x + 480, 105 + index * 20)
