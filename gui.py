@@ -150,6 +150,7 @@ class InventoryMenu(Gui_base):
             self.player.inventory[self.selected].use()
 
     def open(self):
+        tmp_surf = self.screen.copy()
         is_open = True
         pg.key.set_repeat(100, 50)
         while is_open:
@@ -176,6 +177,8 @@ class InventoryMenu(Gui_base):
                         #    if self.selected > 0:
                         #        self.selected -= 1
         pg.key.set_repeat()
+        self.screen.blit(tmp_surf, (0, 0))
+        pg.display.flip()
 
 class ShowEq:
     def __init__(self, player):
@@ -594,3 +597,5 @@ class ContainerMenu(Gui_base):
                         item = self.stacks[list(self.stacks.keys())[self.selected]][0]
                         self.current_item_list.remove(item)
                         player.inventory.append(item)
+        self.screen.fill(BLACK)
+        pg.display.flip()

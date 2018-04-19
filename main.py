@@ -142,6 +142,7 @@ class Game:
     def pause(self):
         # Pausing
         paused = True
+        tmp_surf = self.screen.copy()
         while paused:
             # Event loop which overrides all other controls
             for event in pg.event.get():
@@ -159,6 +160,8 @@ class Game:
             self.pause_menu.draw()
             pg.display.flip()
             self.clock.tick()
+        self.screen.blit(tmp_surf, (0, 0))
+        pg.display.flip()
 
     def show_start_screen(self):
         pass
