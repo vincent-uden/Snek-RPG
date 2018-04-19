@@ -159,6 +159,9 @@ class Player(pg.sprite.Sprite):
             self.inventory.append(self.get_weapon())
         self.equipped[0] = weapon
 
+    def heal(self, amount):
+        self.stats["current_hp"] = min(self.stats["max_hp"], self.stats["current_hp"] + amount)
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls

@@ -89,6 +89,7 @@ class StatsMenu(Gui_base):
         self.name_text.draw(120, 92)
 
     def open(self):
+        tmp_surf = self.screen.copy()
         is_open = True
         while is_open:
             self.draw()
@@ -100,6 +101,8 @@ class StatsMenu(Gui_base):
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_p or event.key == pg.K_TAB:
                         is_open = False
+        self.screen.blit(tmp_surf, (0, 0))
+        pg.display.flip()
 
 class InventoryMenu(Gui_base):
 
@@ -197,19 +200,18 @@ class HpBar(Gui_base):
         super().__init__(screen, texture, x, y)
         self.entity = entity
         self.name_text = MenuText(self.entity.get_stat(4).upper(), self.screen, size=16, AA=False)
-        self.hp_text = MenuText(f"HP:{self.entity.get_stat(3)}/{self.entity.get_stat(2)}", self.screen, size=16, AA=False)
+        self.hp_text = MenuText(f"HP:{max(self.entity.get_stat(3), 0)}/{self.entity.get_stat(2)}", self.screen, size=16, AA=False)
         self.bar = pg.Surface((275, 8))
         self.bar.fill(GREEN)
     
     def draw(self):
-        # TODO: Create function and update function
         super().draw()
         self.screen.blit(self.bar, (self.x + 13, self.y + 53))
         self.name_text.draw(self.x + 12, self.y + 20)
         self.hp_text.draw(self.x + 160, self.y + 20)
     
     def update(self):
-        width = max(math.floor(275 * (self.entity.get_stat(3) / self.entity.get_stat(2))), 0)
+        width = max(math.floor(275 * (min(self.entity.get_stat(3), self.entity.get_stat(2)) / self.entity.get_stat(2))), 0)
         self.bar = pg.Surface((width, 8))
         if (self.entity.get_stat(3) / self.entity.get_stat(2)) > 0.3:
             self.bar.fill(GREEN)
@@ -217,7 +219,7 @@ class HpBar(Gui_base):
             self.bar.fill(YELLOW)
         else:
             self.bar.fill(RED)
-        self.hp_text.update(f"HP:{self.entity.get_stat(3)}/{self.entity.get_stat(2)}")
+        self.hp_text = MenuText(f"HP:{max(self.entity.get_stat(3), 0)}/{self.entity.get_stat(2)}", self.screen, size=16, AA=False)
 
 class BattleScreen(Gui_base):
     # The screen which show the players and opponents
@@ -575,6 +577,7 @@ class ContainerMenu(Gui_base):
             self.current_f_text = MenuText("", self.screen)
 
     def open(self, player):
+        tmp_surf = self.screen.copy()
         is_open = True
         while is_open:
             self.draw()
@@ -594,8 +597,11 @@ class ContainerMenu(Gui_base):
                     elif event.key == pg.K_s:
                         self.move_pointer(1)
                     elif event.key == pg.K_e:
-                        item = self.stacks[list(self.stacks.keys())[self.selected]][0]
-                        self.current_item_list.remove(item)
-                        player.inventory.append(item)
-        self.screen.fill(BLACK)
+                        try:
+                            item = self.stacks[list(self.stacks.keys())[self.selected]][0]
+                            self.current_item_list.remove(item)
+                            player.inventory.append(item)
+                        except:
+                            pass
+        self.screen.blit(tmp_surf, (0, 0))
         pg.display.flip()

@@ -20,7 +20,7 @@ class Food(Item):
         self.healing = healing
     
     def use(self):
-        self.player.stats["current_hp"] += self.healing
+        self.player.heal(self.healing)
 
 class Weapon(Item):
     def __init__(self, name, value, player, str_bonus, acc_bonus, moveset, texture, flavor_text):
