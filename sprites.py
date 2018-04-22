@@ -3,6 +3,7 @@ from settings import *
 from random import randint, uniform
 from attacks import *
 from animations import *
+from gui import DialogueWindow
 vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
@@ -264,6 +265,14 @@ class Npc(pg.sprite.Sprite):
 
     def get_texture(self, direction):
         return self.image
+
+class DialogueNpc(Npc):
+    def __init__(self, game, x, y, texture, name, dialogue):
+        super().__init__(game, x, y, texture)
+        self.dialogue = dialogue
+
+    def interact(self):
+        DialogueWindow(self.dialogue).open()
 
 class Enemy(Npc):
     def __init__(self, game, x ,y ,texture, name):

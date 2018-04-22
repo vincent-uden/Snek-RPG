@@ -12,7 +12,7 @@ def f():
 
 class MenuText:
 
-    def __init__(self, text, screen, size=16, AA=True):
+    def __init__(self, text, screen, size=16, AA=False):
         self.font = pg.font.Font("./resources/PressStart2P.ttf", size)
         if type(text) != type([]):
             self.screen_text = self.font.render(text, AA, BLACK)
@@ -32,7 +32,7 @@ class MenuText:
         self.screen_text = self.font.render(new_text, self.anti_aliasing, BLACK)
 
 class Gui_base:
-    def __init__(self, screen, texture, x, y):
+    def  __init__(self, screen, texture, x, y):
         self.screen = screen
         self.image = texture
         self.rect = self.image.get_rect()
@@ -605,3 +605,25 @@ class ContainerMenu(Gui_base):
                             pass
         self.screen.blit(tmp_surf, (0, 0))
         pg.display.flip()
+
+class DialogueWindow(Gui_base):
+    def __init__(self, screen, dialogue):
+        super().__init__(self, screen, pg.image.load("./gui_textures/dialogue_window.png"),  0, HEIGHT - 200)
+        self.dialogue = MenuText(dialogue, screen)
+
+    def draw(self):
+        super().draw()
+        self.dialogue.draw(self.x + 14, self.y + 14)
+
+    def open(self): # Broken, TODO: Create dialogue tree class
+        is_open = True
+        while is_open:
+            self.draw()
+            pg.display.flip()
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_SPACE:
+                        is_open = False
